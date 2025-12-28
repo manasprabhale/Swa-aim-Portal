@@ -28,7 +28,7 @@ const customerSchema = new mongoose.Schema({
 });
 const Customer = mongoose.model('Customer', customerSchema);
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
         console.log('✅ MongoDB Connected');
         app.listen(PORT, () => console.log(`🚀 Server on http://localhost:${PORT}`));
@@ -95,5 +95,6 @@ app.post('/api/forgot-password', async (req, res) => {
     }
 
 });
+
 
 
