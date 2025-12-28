@@ -8,20 +8,19 @@ const User = require('./models/User');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 1. Middleware
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-// 2. SERVE YOUR FRONTEND FILES
-// This line tells the server to show files from the 'public' folder
+// Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 3. Database Connection
+// Database Connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected"))
     .catch(err => console.log("❌ DB Error:", err.message));
 
-// 4. API Routes
+// Registration Route
 app.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -33,8 +32,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// 5. Serve index.html for the main route
-app.get('*', (req, res) => {
+// CORRECTED Wildcard Route for Node 22
+// This ensures any page refresh or unknown route loads your index.html
+app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
