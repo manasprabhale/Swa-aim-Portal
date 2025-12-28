@@ -1,3 +1,6 @@
+"scripts": {
+  "start": "node server.js"
+}
 {
   "name": "swa-aim-portal",
   "version": "1.0.0",
