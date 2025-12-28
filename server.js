@@ -33,7 +33,7 @@ app.post('/register', async (req, res) => {
 });
 
 // CORRECTED Wildcard Route for Node 22
-// This ensures any page refresh or unknown route loads your index.html
+// This ensures your index.html is served for any route
 app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
