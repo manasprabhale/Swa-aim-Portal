@@ -18,10 +18,10 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.log("❌ DB Connection Error:", err.message));
 
 // 3. Serve Static Files
-// This allows the browser to see your HTML, CSS, and JS in the 'public' folder
+// This looks for index.html inside your 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 4. API Routes (Keep these ABOVE the wildcard route)
+// 4. Registration API Route
 app.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -33,9 +33,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// 5. THE FIX: Named Wildcard Route for Node 22
-// ':any*' gives the wildcard a name so the library doesn't crash
-app.get('/:any*', (req, res) => {
+// 5. THE FIX: Standard Homepage Route
+// This version avoids the '*' character entirely to prevent Node 22 errors.
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
