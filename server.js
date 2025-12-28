@@ -18,10 +18,10 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.log("❌ DB Connection Error:", err.message));
 
 // 3. Serve Static Files
-// This serves your index.html, CSS, etc., from the public folder
+// This allows the browser to see your HTML, CSS, and JS in the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 4. Registration API Route
+// 4. API Routes (Keep these ABOVE the wildcard route)
 app.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -33,12 +33,12 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// 5. THE FIX: New Syntax for Wildcard Route
-// This catches all other routes and sends them to your index.html
+// 5. THE FIX: Named Wildcard Route for Node 22
+// ':any*' gives the wildcard a name so the library doesn't crash
 app.get('/:any*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 Swa-aim Server running on port ${PORT}`);
+    console.log(`🚀 Swa-aim Server is live on port ${PORT}`);
 });
