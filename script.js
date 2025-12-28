@@ -1,4 +1,4 @@
-const API = "https://swa-aim-portal.onrender.com/api";
+const API = "https://swaim-portal.onrender.com";
 
 function showTab(type) {
     toggleForgot(false);
@@ -145,3 +145,4 @@ document.getElementById('forgot-form').onsubmit = async (e) => {
     }
 
 };
+
