@@ -1,4 +1,4 @@
-const API = "http://localhost:3000/api";
+const API = "https://swa-aim-portal.onrender.com/api";
 
 function showTab(type) {
     toggleForgot(false);
@@ -143,4 +143,5 @@ document.getElementById('forgot-form').onsubmit = async (e) => {
     } catch (err) {
         alert("Reset failed.");
     }
+
 };
