@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -94,4 +95,5 @@ app.post('/api/forgot-password', async (req, res) => {
     }
 
 });
+
 
