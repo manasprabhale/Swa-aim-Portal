@@ -27,7 +27,7 @@ const customerSchema = new mongoose.Schema({
 });
 const Customer = mongoose.model('Customer', customerSchema);
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/insuranceDB')
+mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB Connected');
         app.listen(PORT, () => console.log(`🚀 Server on http://localhost:${PORT}`));
@@ -92,4 +92,5 @@ app.post('/api/forgot-password', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Reset failed' });
     }
+
 });
