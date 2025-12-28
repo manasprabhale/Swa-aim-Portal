@@ -3,51 +3,53 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-const app = express();
+// 1. IMPORT THE USER MODEL
+// This looks into your 'models' folder for the User.js file you just made.
+const User = require('./models/User');
 
-// Use Render's dynamic port or default to 5000 for local testing
+const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 1. Middleware
-app.use(express.json());
+// 2. MIDDLEWARE
+app.use(express.json()); // Essential for reading JSON data from your website
 app.use(cors());
 
-// 2. Database Connection
-// Ensure 'MONGO_URI' is the name used in your Render Environment settings
-const dbURI = process.env.MONGO_URI;
+// 3. DATABASE CONNECTION
+// This uses the MONGO_URI you saved in your Render Environment settings.
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("✅ Database Connected & User Model Loaded"))
+    .catch(err => console.log("❌ DB Error:", err.message));
 
-mongoose.connect(dbURI)
-    .then(() => {
-        console.log("✅ Pinged your deployment. You successfully connected to MongoDB!");
-    })
-    .catch((err) => {
-        console.error("❌ MongoDB Connection Error:", err.message);
-    });
+// 4. THE REGISTER ROUTE
+// This is the "endpoint" where your frontend will send user data.
+app.post('/register', async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
 
-// 3. Routes
+        // Check if user already exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ error: "Email already registered" });
+        }
 
-// Home Route
+        // Create new user using our User Model
+        const newUser = new User({ name, email, password });
+        
+        // Save to MongoDB
+        await newUser.save();
+        
+        res.status(201).json({ message: "Investor registered successfully!" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Home route for testing
 app.get('/', (req, res) => {
-    res.send('Swa-aim Portal Backend is Running...');
+    res.send('Swa-aim Portal Backend is Active and Database is Linked!');
 });
 
-// Database Status Check Route
-// Visit https://swaim-portal.onrender.com/db-check to see this
-app.get('/db-check', (req, res) => {
-    const states = {
-        0: "Disconnected",
-        1: "Connected",
-        2: "Connecting",
-        3: "Disconnecting"
-    };
-    const stateNum = mongoose.connection.readyState;
-    res.json({
-        status: states[stateNum],
-        dbName: mongoose.connection.name
-    });
-});
-
-// 4. Start the Server
+// Start server
 app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
