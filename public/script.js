@@ -43,7 +43,17 @@ async function addPolicy() {
         alert("Policy successfully added!");
     }
 }
+// ... existing code ...
 
+function logout() {
+    // Clear the current user session
+    currentEmail = "";
+    // Hide dashboard and show login
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('auth-box').style.display = 'block';
+    // Optional: Refresh page to clear all inputs
+    location.reload();
+}
 function renderPolicies(policies) {
     const list = document.getElementById('policy-list');
     list.innerHTML = policies.map(p => `
