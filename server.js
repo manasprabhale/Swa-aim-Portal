@@ -3,63 +3,59 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// SERVE STATIC FILES: This allows Render to find your HTML/JS/CSS
+// --- FIX: This serves your HTML/CSS/JS files to the browser ---
 app.use(express.static(path.join(__dirname, '/')));
 
 const PORT = process.env.PORT || 5000;
 
-// User & Policy Schema
-const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, unique: true, required: true },
-    password: { type: String, required: true },
+// Schema with your requested fields
+const customerSchema = new mongoose.Schema({
+    name: String,
+    email: { type: String, unique: true },
+    phone: String,
+    password: { type: String },
     policies: [{
         policyNumber: String,
         dob: String,
         premium: Number,
-        mode: String,
+        mode: String, // Monthly, Yearly, etc.
         status: { type: String, default: 'Active' }
     }]
 });
-const User = mongoose.model('User', userSchema);
+const Customer = mongoose.model('Customer', customerSchema);
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected"))
-    .catch(err => console.log("❌ DB Error:", err));
-
-// API: Register
-app.post('/api/register', async (req, res) => {
-    try {
-        const newUser = new User(req.body);
-        await newUser.save();
-        res.status(201).json({ message: "Registration successful!" });
-    } catch (err) { res.status(400).json({ error: "Email already exists" }); }
-});
+    .catch(err => console.error("❌ Connection Error:", err));
 
 // API: Login
 app.post('/api/login', async (req, res) => {
-    const user = await User.findOne({ email: req.body.email, password: req.body.password });
-    if (user) res.json(user);
-    else res.status(401).json({ error: "Invalid credentials" });
+    const user = await Customer.findOne({ email: req.body.email });
+    if (user && await bcrypt.compare(req.body.password, user.password)) {
+        res.json(user);
+    } else {
+        res.status(401).json({ message: "Invalid credentials" });
+    }
 });
 
-// API: Add Policy (Handles Multiple Policies)
+// API: Add Policy (The logic for your button)
 app.post('/api/add-policy', async (req, res) => {
     try {
         const { email, policyNumber, dob, premium, mode } = req.body;
-        const user = await User.findOne({ email });
+        const user = await Customer.findOne({ email });
         user.policies.push({ policyNumber, dob, premium, mode });
         await user.save();
         res.json(user.policies);
     } catch (e) { res.status(500).json({ error: "Failed to add policy" }); }
 });
 
-// Serve index.html for the main route
+// --- FIX: Redirects all website visits to your index.html ---
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
