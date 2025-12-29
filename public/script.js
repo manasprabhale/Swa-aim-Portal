@@ -1,38 +1,63 @@
+let mode = 'login';
+
+// Initialize the form
+window.onload = () => switchTab('login');
+
+function switchTab(newMode) {
+    mode = newMode;
+    const container = document.getElementById('form-container');
+    const loginTab = document.getElementById('login-tab');
+    const regTab = document.getElementById('register-tab');
+
+    if (mode === 'login') {
+        loginTab.classList.add('active');
+        regTab.classList.remove('active');
+        container.innerHTML = `
+            <input type="email" id="email" placeholder="Email Address">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn-primary" onclick="handleAuth()">Access My Policy</button>
+            <a class="forgot-pass">Forgot Password?</a>
+        `;
+    } else {
+        regTab.classList.add('active');
+        loginTab.classList.remove('active');
+        container.innerHTML = `
+            <input type="text" id="fullname" placeholder="Full Name">
+            <input type="email" id="email" placeholder="Email Address">
+            <input type="text" id="phone" placeholder="Phone Number">
+            <input type="password" id="pass" placeholder="Create Password">
+            <button class="btn-primary" onclick="handleAuth()">Create Account</button>
+        `;
+    }
+}
+
 async function handleAuth() {
-    // Check if we are in login or register mode based on the active tab
-    const isRegister = document.getElementById('register-tab').classList.contains('active');
-    
     const email = document.getElementById('email').value;
     const password = document.getElementById('pass').value;
-    
     let payload = { email, password };
 
-    if (isRegister) {
+    if (mode === 'register') {
         payload.name = document.getElementById('fullname').value;
         payload.phone = document.getElementById('phone').value;
     }
 
-    const endpoint = isRegister ? '/register' : '/login';
-
     try {
-        const response = await fetch(endpoint, {
+        const response = await fetch(mode === 'login' ? '/login' : '/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
         const data = await response.json();
-
         if (response.ok) {
             alert(data.message);
-            if (!isRegister) {
-                // If login success, show the dashboard or user info
-                document.body.innerHTML = `<h1>Welcome back, ${data.user.name}</h1>`;
+            if(mode === 'login') {
+                document.body.innerHTML = `<div class="auth-card"><h1>Welcome back, ${data.user.name}</h1></div>`;
             }
         } else {
             alert(data.error);
         }
-    } catch (error) {
-        alert("Error connecting to server. Please try again.");
+    } catch (err) {
+        alert("Server connection failed.");
     }
 }
