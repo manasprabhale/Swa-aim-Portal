@@ -10,12 +10,22 @@
     <div id="auth-box" class="card">
         <h1>Swa-aim Insurance</h1>
         <div class="tabs">
-            <button onclick="setMode('login')">Login</button>
-            <button onclick="setMode('reg')">Register</button>
+            <button id="tab-login" class="active" onclick="setMode('login')">Login</button>
+            <button id="tab-reg" onclick="setMode('reg')">Register</button>
         </div>
-        <div id="form-container">
-            </div>
-        <button class="btn-main" onclick="handleAuth()">Submit</button>
+
+        <div id="login-fields">
+            <input type="email" id="l-email" placeholder="Email Address">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button class="btn-main" onclick="handleAuth('login')">Login</button>
+        </div>
+
+        <div id="reg-fields" style="display:none;">
+            <input type="text" id="r-name" placeholder="Full Name">
+            <input type="email" id="r-email" placeholder="Email Address">
+            <input type="password" id="r-pass" placeholder="Password">
+            <button class="btn-main" onclick="handleAuth('reg')">Create Account</button>
+        </div>
     </div>
 
     <div id="dashboard" class="card" style="display:none;">
