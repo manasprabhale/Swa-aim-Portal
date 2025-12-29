@@ -1,6 +1,6 @@
-let currentEmail = "";
+let userEmail = "";
 
-async function handleLogin() {
+async function login() {
     const email = document.getElementById('l-email').value;
     const password = document.getElementById('l-pass').value;
 
@@ -12,19 +12,19 @@ async function handleLogin() {
 
     if (res.ok) {
         const user = await res.json();
-        currentEmail = user.email;
-        document.getElementById('auth-box').style.display = 'none';
+        userEmail = user.email;
+        document.getElementById('auth-section').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
-        document.getElementById('user-name').innerText = user.name;
+        document.getElementById('user-display').innerText = user.name;
         renderPolicies(user.policies);
     } else {
         alert("Login failed");
     }
 }
 
-async function addPolicy() {
+async function addNewPolicy() {
     const payload = {
-        email: currentEmail,
+        email: userEmail,
         policyNumber: document.getElementById('p-num').value,
         dob: document.getElementById('p-dob').value,
         premium: document.getElementById('p-prem').value,
@@ -38,17 +38,19 @@ async function addPolicy() {
     });
 
     if (res.ok) {
-        const policies = await res.json();
-        renderPolicies(policies);
-        alert("Policy Added!");
+        const updatedPolicies = await res.json();
+        renderPolicies(updatedPolicies);
+        alert("Policy Added Successfully!");
+    } else {
+        alert("Error adding policy");
     }
 }
 
 function renderPolicies(policies) {
-    const list = document.getElementById('policy-list');
-    list.innerHTML = policies.map(p => `
+    const container = document.getElementById('policy-list');
+    container.innerHTML = policies.map(p => `
         <div class="policy-item">
-            <strong>#${p.policyNumber}</strong> | Premium: ₹${p.premium} (${p.mode})
+            <strong>#${p.policyNumber}</strong> - ₹${p.premium} (${p.mode})
         </div>
     `).join('');
 }
