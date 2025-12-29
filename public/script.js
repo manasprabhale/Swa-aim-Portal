@@ -1,23 +1,37 @@
 let currentEmail = "";
 
-// Toggle between Login and Register views
 function setMode(mode) {
-    document.getElementById('login-fields').style.display = mode === 'login' ? 'block' : 'none';
-    document.getElementById('reg-fields').style.display = mode === 'reg' ? 'block' : 'none';
+    const loginFields = document.getElementById('login-fields');
+    const regFields = document.getElementById('reg-fields');
+    
+    if (mode === 'login') {
+        loginFields.style.display = 'block';
+        regFields.style.display = 'none';
+        document.getElementById('tab-login').classList.add('active');
+        document.getElementById('tab-reg').classList.remove('active');
+    } else {
+        loginFields.style.display = 'none';
+        regFields.style.display = 'block';
+        document.getElementById('tab-login').classList.remove('active');
+        document.getElementById('tab-reg').classList.add('active');
+    }
 }
 
 async function handleAuth(type) {
     const email = type === 'login' ? document.getElementById('l-email').value : document.getElementById('r-email').value;
     const password = type === 'login' ? document.getElementById('l-pass').value : document.getElementById('r-pass').value;
-    const name = type === 'reg' ? document.getElementById('r-name').value : null;
-
+    
     const endpoint = type === 'login' ? '/api/login' : '/api/register';
-    const body = type === 'login' ? { email, password } : { name, email, password };
+    const payload = type === 'login' ? { email, password } : { 
+        name: document.getElementById('r-name').value, 
+        email, 
+        password 
+    };
 
     const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify(payload)
     });
 
     const data = await res.json();
@@ -27,34 +41,26 @@ async function handleAuth(type) {
             document.getElementById('auth-box').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             document.getElementById('user-name').innerText = data.name;
-            renderPolicies(data.policies);
+            renderPolicies(data.policies || []);
         } else {
-            alert("Registration successful! Please login.");
+            alert("Registered! Please login.");
             setMode('login');
         }
     } else {
-        alert(data.error || "Action failed");
+        alert(data.error || "Failed");
     }
 }
 
-async function addPolicy() {
-    const payload = {
-        email: currentEmail,
-        policyNumber: document.getElementById('p-num').value,
-        dob: document.getElementById('p-dob').value,
-        premium: document.getElementById('p-prem').value,
-        mode: document.getElementById('p-mode').value
-    };
+function renderPolicies(policies) {
+    const list = document.getElementById('policy-list');
+    list.innerHTML = policies.map(p => `
+        <div class="policy-item">
+            <strong>ID: ${p.policyNumber}</strong><br>
+            Premium: ₹${p.premium} | Mode: ${p.mode}
+        </div>
+    `).join('');
+}
 
-    const res = await fetch('/api/add-policy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-        const policies = await res.json();
-        renderPolicies(policies);
-        alert("Policy Added!");
-    }
+function logout() {
+    location.reload();
 }
