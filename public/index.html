@@ -2,34 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swa-aim Insurance Portal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="auth-box" class="container">
+    <div id="auth-box" class="card">
         <h1>Swa-aim Insurance</h1>
-        <input type="email" id="l-email" placeholder="Email Address">
-        <input type="password" id="l-pass" placeholder="Password">
-        <button onclick="login()">Access My Policy</button>
+        <div class="tabs">
+            <button onclick="setMode('login')">Login</button>
+            <button onclick="setMode('reg')">Register</button>
+        </div>
+        <div id="form-container">
+            </div>
+        <button class="btn-main" onclick="handleAuth()">Submit</button>
     </div>
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <h2>Welcome, <span id="display-name"></span></h2>
-    <button onclick="logout()" style="background: #dc3545; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; border: none;">Logout</button>
-</div>
-    <div id="dashboard" class="container" style="display:none;">
-        <h2>Welcome, <span id="u-name"></span></h2>
+
+    <div id="dashboard" class="card" style="display:none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Welcome, <span id="user-name"></span></h2>
+            <button onclick="logout()" class="btn-logout">Logout</button>
+        </div>
         <div id="policy-list"></div>
         <hr>
         <h3>Add New Policy</h3>
         <input type="text" id="p-num" placeholder="Policy Number">
-        <input type="date" id="p-dob" title="Date of Birth">
+        <input type="date" id="p-dob">
         <input type="number" id="p-prem" placeholder="Premium Amount">
         <select id="p-mode">
             <option value="Monthly">Monthly</option>
             <option value="Quarterly">Quarterly</option>
             <option value="Yearly">Yearly</option>
         </select>
-        <button onclick="addPolicy()" style="background: #28a745; color: white;">Add Policy</button>
+        <button class="btn-main" onclick="addPolicy()">Add Policy</button>
     </div>
     <script src="script.js"></script>
 </body>
