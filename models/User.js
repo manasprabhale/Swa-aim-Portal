@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
         policyNumber: String,
         dob: String,
         premium: Number,
-        mode: String
+        mode: String // Monthly, Quarterly, Yearly
     }]
 });
 
