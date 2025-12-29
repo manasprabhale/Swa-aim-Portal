@@ -5,14 +5,13 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
     password: { type: String, required: true },
-    // This array allows one user to have multiple policies
+    // Array to allow multiple policies per customer
     policies: [{
-        policyNumber: { type: String, required: true },
-        dob: { type: String, required: true },
-        premium: { type: Number, required: true },
-        paymentMode: { type: String, required: true }, // e.g., Monthly, Yearly
-        status: { type: String, default: 'Active' },
-        createdAt: { type: Date, default: Date.now }
+        policyNumber: String,
+        dob: String,
+        premium: Number,
+        mode: String, // Monthly, Quarterly, Yearly
+        dateAdded: { type: Date, default: Date.now }
     }],
     createdAt: { type: Date, default: Date.now }
 });
