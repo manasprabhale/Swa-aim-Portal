@@ -1,18 +1,19 @@
-let userEmail = "";
+let currentUserEmail = "";
 
-async function login() {
+async function handleLogin() {
     const email = document.getElementById('l-email').value;
-    const pass = document.getElementById('l-pass').value;
+    const password = document.getElementById('l-pass').value;
 
+    // Notice we use a relative path /api/login (No localhost!)
     const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pass })
+        body: JSON.stringify({ email, password })
     });
 
     if (res.ok) {
         const user = await res.json();
-        userEmail = user.email;
+        currentUserEmail = user.email;
         document.getElementById('auth-box').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         renderPolicies(user.policies);
@@ -21,7 +22,7 @@ async function login() {
 
 async function addPolicy() {
     const payload = {
-        email: userEmail,
+        email: currentUserEmail,
         policyNumber: document.getElementById('p-num').value,
         dob: document.getElementById('p-dob').value,
         premium: document.getElementById('p-prem').value,
@@ -37,15 +38,6 @@ async function addPolicy() {
     if (res.ok) {
         const policies = await res.json();
         renderPolicies(policies);
-        alert("Policy Added!");
+        alert("Success!");
     }
-}
-
-function renderPolicies(policies) {
-    const list = document.getElementById('policy-list');
-    list.innerHTML = policies.map(p => `
-        <div class="policy-card">
-            <strong>#${p.policyNumber}</strong> - ₹${p.premium} (${p.mode})
-        </div>
-    `).join('');
 }
