@@ -8,74 +8,55 @@ const User = require('./models/User');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(express.json());
 app.use(cors());
-
-// Serve Static Files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ MongoDB Connected Successfully"))
-    .catch(err => console.log("❌ DB Connection Error:", err.message));
+    .then(() => console.log("✅ MongoDB Connected"))
+    .catch(err => console.log("❌ DB Error:", err));
 
-// --- API ROUTES ---
-
-// Registration Route
+// Registration
 app.post('/register', async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
-        const userExists = await User.findOne({ email });
-        if (userExists) return res.status(400).json({ error: "Email already registered" });
-
         const newUser = new User({ name, email, phone, password });
         await newUser.save();
-        res.status(201).json({ message: "Account created successfully!" });
+        res.status(201).json({ message: "Account Created!" });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: "Email already exists" });
     }
 });
 
-// Login Route
+// Login
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-        
         if (!user || user.password !== password) {
-            return res.status(400).json({ error: "Invalid email or password" });
+            return res.status(400).json({ error: "Invalid Credentials" });
         }
-        
-        res.status(200).json({ 
-            message: "Login successful!", 
-            user: { name: user.name, email: user.email, balance: user.totalInvestment } 
-        });
+        res.json({ user });
     } catch (err) {
-        res.status(500).json({ error: "Server error" });
+        res.status(500).json({ error: "Server Error" });
     }
 });
-// --- Route to Add a New Policy ---
+
+// Add Policy Route
 app.post('/add-policy', async (req, res) => {
     try {
-        const { email, policyNumber, dob, premium, paymentMode } = req.body;
-        
+        const { email, policyNumber, dob, premium, mode } = req.body;
         const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ error: "User not found" });
-
-        // Add the new policy to the user's policies array
-        user.policies.push({ policyNumber, dob, premium, paymentMode });
+        user.policies.push({ policyNumber, dob, premium, mode });
         await user.save();
-
-        res.status(200).json({ message: "Policy added successfully!", policies: user.policies });
+        res.json({ message: "Policy Added!", policies: user.policies });
     } catch (err) {
-        res.status(500).json({ error: "Failed to add policy" });
+        res.status(500).json({ error: "Error adding policy" });
     }
 });
-// Serve the main page - Optimized for Node 22
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`🚀 Swa-aim Server live on port ${PORT}`));
-
+app.listen(PORT, () => console.log(`🚀 Port: ${PORT}`));
