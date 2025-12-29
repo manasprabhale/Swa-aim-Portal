@@ -7,18 +7,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="auth-card" id="auth-section">
+    <div class="card" id="auth-box">
         <h1>Swa-aim Insurance</h1>
         <div class="tabs">
-            <div id="l-tab" class="tab active" onclick="setMode('login')">Login</div>
-            <div id="r-tab" class="tab" onclick="setMode('register')">Register</div>
+            <button onclick="showTab('login')">Login</button>
+            <button onclick="showTab('reg')">Register</button>
         </div>
-        <div id="form-fields"></div>
-        <button class="btn-primary" onclick="handleAuth()">Submit</button>
+        <div id="login-fields">
+            <input type="email" id="l-email" placeholder="Email">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button class="btn" onclick="handleLogin()">Access My Policy</button>
+        </div>
     </div>
 
-    <div class="auth-card" id="dashboard-section" style="display:none;">
-        <h1>Welcome, <span id="user-display-name"></span></h1>
+    <div class="card" id="dashboard" style="display:none;">
+        <h2>Welcome, <span id="user-name"></span></h2>
         <div id="policy-list"></div>
         <hr>
         <h3>Add New Policy</h3>
@@ -27,14 +30,10 @@
         <input type="number" id="p-prem" placeholder="Premium Amount">
         <select id="p-mode">
             <option value="Monthly">Monthly</option>
-            <option value="Quarterly">Quarterly</option>
-            <option value="Half-Yearly">Half-Yearly</option>
             <option value="Yearly">Yearly</option>
         </select>
-        <button class="btn-primary" onclick="addPolicy()">Add Policy</button>
-        <button onclick="location.reload()">Logout</button>
+        <button class="btn" onclick="addPolicy()">Add Policy</button>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
