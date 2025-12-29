@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // --- API ROUTES ---
 
-// Registration Route - Handles the new 'phone' field
+// Registration Route
 app.post('/register', async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
@@ -42,16 +42,21 @@ app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+        
         if (!user || user.password !== password) {
             return res.status(400).json({ error: "Invalid email or password" });
         }
-        res.status(200).json({ message: "Login successful!", user });
+        
+        res.status(200).json({ 
+            message: "Login successful!", 
+            user: { name: user.name, email: user.email, balance: user.totalInvestment } 
+        });
     } catch (err) {
         res.status(500).json({ error: "Server error" });
     }
 });
 
-// Fixed Homepage route for Node 22 compatibility
+// Serve the main page - Optimized for Node 22
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
