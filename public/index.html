@@ -2,18 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Swa-aim Investment Portal</title>
+    <title>Swa-aim Investor Portal</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
-        .card { background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+        body { font-family: sans-serif; background: #f0f2f5; text-align: center; padding: 40px; }
+        .container { background: white; padding: 20px; border-radius: 8px; display: inline-block; width: 300px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
+        button { width: 95%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .toggle-link { color: blue; cursor: pointer; font-size: 0.8em; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Welcome to Swa-aim Portal</h1>
-        <p>Your Investment Journey Starts Here.</p>
-        <button onclick="alert('Connection to Backend: Active')">Check Status</button>
+
+    <h1>Swa-aim Portal</h1>
+
+    <div class="container" id="auth-box">
+        <h2 id="form-title">Register</h2>
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="email" id="email" placeholder="Email Address">
+        <input type="password" id="pass" placeholder="Password">
+        <button onclick="handleAuth()">Submit</button>
+        <p class="toggle-link" onclick="toggleForm()">Already have an account? Login</p>
     </div>
+
+    <script>
+        let isLogin = false;
+
+        function toggleForm() {
+            isLogin = !isLogin;
+            document.getElementById('form-title').innerText = isLogin ? "Login" : "Register";
+            document.getElementById('name').style.display = isLogin ? "none" : "block";
+        }
+
+        async function handleAuth() {
+            const endpoint = isLogin ? '/login' : '/register';
+            const payload = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('pass').value,
+                name: document.getElementById('name').value
+            };
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);
+                if(isLogin) {
+                    document.body.innerHTML = `<h1>Welcome, ${data.user.name}!</h1><p>Investment Balance: ₹${data.user.balance}</p>`;
+                }
+            } else {
+                alert(data.error);
+            }
+        }
+    </script>
 </body>
 </html>
