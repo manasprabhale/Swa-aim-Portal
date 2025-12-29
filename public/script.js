@@ -1,64 +1,75 @@
 let mode = 'login';
+let currentUserEmail = '';
 
-// Load login form by default
-window.onload = () => switchTab('login');
+window.onload = () => setMode('login');
 
-function switchTab(newMode) {
-    mode = newMode;
-    const container = document.getElementById('form-container');
-    const loginTab = document.getElementById('login-tab');
-    const regTab = document.getElementById('register-tab');
+function setMode(m) {
+    mode = m;
+    const fields = document.getElementById('form-fields');
+    document.getElementById('l-tab').className = mode === 'login' ? 'tab active' : 'tab';
+    document.getElementById('r-tab').className = mode === 'register' ? 'tab active' : 'tab';
 
-    if (mode === 'login') {
-        loginTab.classList.add('active');
-        regTab.classList.remove('active');
-        container.innerHTML = `
-            <input type="email" id="email" placeholder="Email Address">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn-primary" onclick="handleAuth()">Access My Policy</button>
-            <a class="forgot-pass">Forgot Password?</a>
-        `;
-    } else {
-        regTab.classList.add('active');
-        loginTab.classList.remove('active');
-        container.innerHTML = `
-            <input type="text" id="fullname" placeholder="Full Name">
-            <input type="email" id="email" placeholder="Email Address">
-            <input type="text" id="phone" placeholder="Phone Number">
-            <input type="password" id="pass" placeholder="Create Password">
-            <button class="btn-primary" onclick="handleAuth()">Create Account</button>
-        `;
-    }
+    fields.innerHTML = mode === 'login' ? 
+        `<input type="email" id="email" placeholder="Email"><input type="password" id="pass" placeholder="Password">` :
+        `<input type="text" id="name" placeholder="Name"><input type="email" id="email" placeholder="Email"><input type="text" id="phone" placeholder="Phone"><input type="password" id="pass" placeholder="Password">`;
 }
 
 async function handleAuth() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('pass').value;
-    let payload = { email, password };
+    const name = mode === 'register' ? document.getElementById('name').value : '';
+    const phone = mode === 'register' ? document.getElementById('phone').value : '';
 
-    if (mode === 'register') {
-        payload.name = document.getElementById('fullname').value;
-        payload.phone = document.getElementById('phone').value;
-    }
+    const res = await fetch(mode === 'login' ? '/login' : '/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name, email, phone, password })
+    });
 
-    try {
-        const response = await fetch(mode === 'login' ? '/login' : '/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            alert(data.message);
-            if (mode === 'login') {
-                // Redirect or update UI for logged-in state
-                document.body.innerHTML = `<div class="auth-card"><h1>Welcome, ${data.user.name}</h1><p>Policy Balance: ₹${data.user.balance}</p></div>`;
-            }
+    const data = await res.json();
+    if (res.ok) {
+        if (mode === 'login') {
+            currentUserEmail = data.user.email;
+            showDashboard(data.user);
         } else {
-            alert(data.error);
+            alert("Registered! Please Login.");
+            setMode('login');
         }
-    } catch (err) {
-        alert("Connection to server failed.");
-    }
+    } else { alert(data.error); }
+}
+
+function showDashboard(user) {
+    document.getElementById('auth-section').style.display = 'none';
+    document.getElementById('dashboard-section').style.display = 'block';
+    document.getElementById('user-display-name').innerText = user.name;
+    renderPolicies(user.policies);
+}
+
+async function addPolicy() {
+    const payload = {
+        email: currentUserEmail,
+        policyNumber: document.getElementById('p-num').value,
+        dob: document.getElementById('p-dob').value,
+        premium: document.getElementById('p-prem').value,
+        mode: document.getElementById('p-mode').value
+    };
+
+    const res = await fetch('/add-policy', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (res.ok) { renderPolicies(data.policies); }
+}
+
+function renderPolicies(policies) {
+    const list = document.getElementById('policy-list');
+    list.innerHTML = policies.map(p => `
+        <div class="policy-item">
+            <p><strong>Policy:</strong> ${p.policyNumber}</p>
+            <p>DOB: ${p.dob} | Premium: ₹${p.premium} (${p.mode})</p>
+        </div>
+    `).join('');
 }
