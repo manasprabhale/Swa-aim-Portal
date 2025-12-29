@@ -12,7 +12,10 @@
         <input type="password" id="l-pass" placeholder="Password">
         <button onclick="login()">Access My Policy</button>
     </div>
-
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Welcome, <span id="display-name"></span></h2>
+    <button onclick="logout()" style="background: #dc3545; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; border: none;">Logout</button>
+</div>
     <div id="dashboard" class="container" style="display:none;">
         <h2>Welcome, <span id="u-name"></span></h2>
         <div id="policy-list"></div>
