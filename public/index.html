@@ -3,39 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swa-aim Insurance Portal</title>
+    <title>Swa-aim Portal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="dashboard" style="display:none;">
-    <h2>Your Policies</h2>
-    <div id="policy-list"></div>
-
-    <hr>
-    <h3>Add New Policy</h3>
-    <input type="text" id="p-number" placeholder="Policy Number">
-    <input type="date" id="p-dob" title="Date of Birth">
-    <input type="number" id="p-premium" placeholder="Premium Amount">
-    <select id="p-mode">
-        <option value="Monthly">Monthly</option>
-        <option value="Quarterly">Quarterly</option>
-        <option value="Half-Yearly">Half-Yearly</option>
-        <option value="Yearly">Yearly</option>
-    </select>
-    <button class="btn-primary" onclick="addPolicy()">Add Policy</button>
-</div>
-    <div class="auth-card">
+    <div class="auth-card" id="auth-section">
         <h1>Swa-aim Insurance</h1>
-        <p class="subtitle">Secure Your Future Today</p>
-
         <div class="tabs">
-            <div id="login-tab" class="tab active" onclick="switchTab('login')">Login</div>
-            <div id="register-tab" class="tab" onclick="switchTab('register')">Register</div>
+            <div id="l-tab" class="tab active" onclick="setMode('login')">Login</div>
+            <div id="r-tab" class="tab" onclick="setMode('register')">Register</div>
         </div>
-
-        <div id="form-container">
-            </div>
+        <div id="form-fields"></div>
+        <button class="btn-primary" onclick="handleAuth()">Submit</button>
     </div>
+
+    <div class="auth-card" id="dashboard-section" style="display:none;">
+        <h1>Welcome, <span id="user-display-name"></span></h1>
+        <div id="policy-list"></div>
+        <hr>
+        <h3>Add New Policy</h3>
+        <input type="text" id="p-num" placeholder="Policy Number">
+        <input type="date" id="p-dob">
+        <input type="number" id="p-prem" placeholder="Premium Amount">
+        <select id="p-mode">
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Half-Yearly">Half-Yearly</option>
+            <option value="Yearly">Yearly</option>
+        </select>
+        <button class="btn-primary" onclick="addPolicy()">Add Policy</button>
+        <button onclick="location.reload()">Logout</button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
