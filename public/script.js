@@ -1,24 +1,39 @@
 let currentEmail = "";
 
-async function login() {
-    const email = document.getElementById('l-email').value;
-    const password = document.getElementById('l-pass').value;
+// Toggle between Login and Register views
+function setMode(mode) {
+    document.getElementById('login-fields').style.display = mode === 'login' ? 'block' : 'none';
+    document.getElementById('reg-fields').style.display = mode === 'reg' ? 'block' : 'none';
+}
 
-    const res = await fetch('/api/login', {
+async function handleAuth(type) {
+    const email = type === 'login' ? document.getElementById('l-email').value : document.getElementById('r-email').value;
+    const password = type === 'login' ? document.getElementById('l-pass').value : document.getElementById('r-pass').value;
+    const name = type === 'reg' ? document.getElementById('r-name').value : null;
+
+    const endpoint = type === 'login' ? '/api/login' : '/api/register';
+    const body = type === 'login' ? { email, password } : { name, email, password };
+
+    const res = await fetch(endpoint, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ email, password })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
     });
 
+    const data = await res.json();
     if (res.ok) {
-        const user = await res.json();
-        currentEmail = user.email;
-        document.getElementById('auth-box').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        document.getElementById('u-name').innerText = user.name;
-        renderPolicies(user.policies);
+        if (type === 'login') {
+            currentEmail = data.email;
+            document.getElementById('auth-box').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('user-name').innerText = data.name;
+            renderPolicies(data.policies);
+        } else {
+            alert("Registration successful! Please login.");
+            setMode('login');
+        }
     } else {
-        alert("Login failed!");
+        alert(data.error || "Action failed");
     }
 }
 
@@ -33,33 +48,13 @@ async function addPolicy() {
 
     const res = await fetch('/api/add-policy', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     });
 
     if (res.ok) {
         const policies = await res.json();
         renderPolicies(policies);
-        alert("Policy successfully added!");
+        alert("Policy Added!");
     }
-}
-// ... existing code ...
-
-function logout() {
-    // Clear the current user session
-    currentEmail = "";
-    // Hide dashboard and show login
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('auth-box').style.display = 'block';
-    // Optional: Refresh page to clear all inputs
-    location.reload();
-}
-function renderPolicies(policies) {
-    const list = document.getElementById('policy-list');
-    list.innerHTML = policies.map(p => `
-        <div class="policy-item" style="border-left: 4px solid #007bff; padding: 10px; margin: 10px 0; background: #f8f9fa;">
-            <strong>Policy:</strong> ${p.policyNumber}<br>
-            <small>DOB: ${p.dob} | Premium: ₹${p.premium} (${p.mode})</small>
-        </div>
-    `).join('');
 }
