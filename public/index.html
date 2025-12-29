@@ -29,23 +29,20 @@
     </div>
 
     <div id="dashboard" class="card" style="display:none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>Welcome, <span id="user-name"></span></h2>
-            <button onclick="logout()" class="btn-logout">Logout</button>
-        </div>
-        <div id="policy-list"></div>
-        <hr>
-        <h3>Add New Policy</h3>
-        <input type="text" id="p-num" placeholder="Policy Number">
-        <input type="date" id="p-dob">
-        <input type="number" id="p-prem" placeholder="Premium Amount">
-        <select id="p-mode">
-            <option value="Monthly">Monthly</option>
-            <option value="Quarterly">Quarterly</option>
-            <option value="Yearly">Yearly</option>
-        </select>
-        <button class="btn-main" onclick="addPolicy()">Add Policy</button>
-    </div>
+    <h2>Welcome, <span id="user-name"></span></h2>
+    <div id="policy-list"></div>
+    <hr>
+    <h3>Add New Policy</h3>
+    <input type="text" id="p-num" placeholder="Policy Number">
+    <input type="date" id="p-dob">
+    <input type="number" id="p-prem" placeholder="Premium Amount">
+    <select id="p-mode">
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Yearly">Yearly</option>
+    </select>
+    <button class="btn-main" onclick="addPolicy()">Add Policy</button>
+</div>
     <script src="script.js"></script>
 </body>
 </html>
