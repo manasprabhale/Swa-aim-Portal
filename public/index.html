@@ -1,27 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swa-aim Portal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="card" id="auth-box">
+    <div id="auth-section" class="card">
         <h1>Swa-aim Insurance</h1>
-        <div class="tabs">
-            <button onclick="showTab('login')">Login</button>
-            <button onclick="showTab('reg')">Register</button>
-        </div>
-        <div id="login-fields">
-            <input type="email" id="l-email" placeholder="Email">
-            <input type="password" id="l-pass" placeholder="Password">
-            <button class="btn" onclick="handleLogin()">Access My Policy</button>
-        </div>
+        <input type="email" id="l-email" placeholder="Email">
+        <input type="password" id="l-pass" placeholder="Password">
+        <button onclick="login()">Access My Policy</button>
     </div>
 
-    <div class="card" id="dashboard" style="display:none;">
-        <h2>Welcome, <span id="user-name"></span></h2>
+    <div id="dashboard" class="card" style="display:none;">
+        <h2>Welcome, <span id="user-display"></span></h2>
         <div id="policy-list"></div>
         <hr>
         <h3>Add New Policy</h3>
@@ -32,7 +24,7 @@
             <option value="Monthly">Monthly</option>
             <option value="Yearly">Yearly</option>
         </select>
-        <button class="btn" onclick="addPolicy()">Add Policy</button>
+        <button class="btn-add" onclick="addNewPolicy()">Add Policy</button>
     </div>
     <script src="script.js"></script>
 </body>
