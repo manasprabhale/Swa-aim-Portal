@@ -55,10 +55,27 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+// --- Route to Add a New Policy ---
+app.post('/add-policy', async (req, res) => {
+    try {
+        const { email, policyNumber, dob, premium, paymentMode } = req.body;
+        
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ error: "User not found" });
 
+        // Add the new policy to the user's policies array
+        user.policies.push({ policyNumber, dob, premium, paymentMode });
+        await user.save();
+
+        res.status(200).json({ message: "Policy added successfully!", policies: user.policies });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to add policy" });
+    }
+});
 // Serve the main page - Optimized for Node 22
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => console.log(`🚀 Swa-aim Server live on port ${PORT}`));
+
