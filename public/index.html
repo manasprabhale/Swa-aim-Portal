@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="dashboard" style="display:none;">
+    <h2>Your Policies</h2>
+    <div id="policy-list"></div>
+
+    <hr>
+    <h3>Add New Policy</h3>
+    <input type="text" id="p-number" placeholder="Policy Number">
+    <input type="date" id="p-dob" title="Date of Birth">
+    <input type="number" id="p-premium" placeholder="Premium Amount">
+    <select id="p-mode">
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Half-Yearly">Half-Yearly</option>
+        <option value="Yearly">Yearly</option>
+    </select>
+    <button class="btn-primary" onclick="addPolicy()">Add Policy</button>
+</div>
     <div class="auth-card">
         <h1>Swa-aim Insurance</h1>
         <p class="subtitle">Secure Your Future Today</p>
