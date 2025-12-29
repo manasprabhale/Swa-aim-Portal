@@ -8,15 +8,21 @@ const User = require('./models/User');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(express.json());
 app.use(cors());
+
+// Serve Static Files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Database Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ MongoDB Connected"))
-    .catch(err => console.log("❌ DB Error:", err.message));
+    .then(() => console.log("✅ MongoDB Connected Successfully"))
+    .catch(err => console.log("❌ DB Connection Error:", err.message));
 
-// Registration Route
+// --- API ROUTES ---
+
+// Registration Route - Handles the new 'phone' field
 app.post('/register', async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
@@ -45,9 +51,9 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Fixed Homepage route for Node 22
+// Fixed Homepage route for Node 22 compatibility
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Swa-aim Server live on port ${PORT}`));
