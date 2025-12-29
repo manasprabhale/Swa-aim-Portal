@@ -8,28 +8,22 @@ const User = require('./models/User');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(express.json());
 app.use(cors());
-
-// Serve Static Files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ MongoDB Connected Successfully"))
-    .catch(err => console.log("❌ DB Connection Error:", err.message));
+    .then(() => console.log("✅ MongoDB Connected"))
+    .catch(err => console.log("❌ DB Error:", err.message));
 
-// --- API ROUTES ---
-
-// Registration
+// Registration Route
 app.post('/register', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, phone, password } = req.body;
         const userExists = await User.findOne({ email });
-        if (userExists) return res.status(400).json({ error: "Email already exists" });
+        if (userExists) return res.status(400).json({ error: "Email already registered" });
 
-        const newUser = new User({ name, email, password });
+        const newUser = new User({ name, email, phone, password });
         await newUser.save();
         res.status(201).json({ message: "Account created successfully!" });
     } catch (err) {
@@ -37,28 +31,23 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Login
+// Login Route
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-
         if (!user || user.password !== password) {
-            return res.status(400).json({ error: "Invalid credentials" });
+            return res.status(400).json({ error: "Invalid email or password" });
         }
-
-        res.status(200).json({ 
-            message: "Welcome back!", 
-            user: { name: user.name, balance: user.totalInvestment } 
-        });
+        res.status(200).json({ message: "Login successful!", user });
     } catch (err) {
         res.status(500).json({ error: "Server error" });
     }
 });
 
-// Serve the main page
+// Fixed Homepage route for Node 22
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`🚀 Server active on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
