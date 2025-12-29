@@ -1,6 +1,6 @@
 let mode = 'login';
 
-// Initialize the form
+// Load login form by default
 window.onload = () => switchTab('login');
 
 function switchTab(newMode) {
@@ -51,13 +51,14 @@ async function handleAuth() {
         const data = await response.json();
         if (response.ok) {
             alert(data.message);
-            if(mode === 'login') {
-                document.body.innerHTML = `<div class="auth-card"><h1>Welcome back, ${data.user.name}</h1></div>`;
+            if (mode === 'login') {
+                // Redirect or update UI for logged-in state
+                document.body.innerHTML = `<div class="auth-card"><h1>Welcome, ${data.user.name}</h1><p>Policy Balance: ₹${data.user.balance}</p></div>`;
             }
         } else {
             alert(data.error);
         }
     } catch (err) {
-        alert("Server connection failed.");
+        alert("Connection to server failed.");
     }
 }
