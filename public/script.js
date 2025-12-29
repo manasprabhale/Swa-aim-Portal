@@ -1,45 +1,31 @@
-let currentUserEmail = "";
+let userEmail = "";
 
-// Switch between Login and Register
-function showTab(type) {
-    const isReg = type === 'reg';
-    document.getElementById('reg-form').style.display = isReg ? 'block' : 'none';
-    document.getElementById('login-form').style.display = isReg ? 'none' : 'block';
-}
-
-// Handle Login
-async function login(e) {
-    if(e) e.preventDefault();
+async function login() {
     const email = document.getElementById('l-email').value;
-    const password = document.getElementById('l-pass').value;
+    const pass = document.getElementById('l-pass').value;
 
     const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password: pass })
     });
 
     if (res.ok) {
         const user = await res.json();
-        currentUserEmail = user.email;
+        userEmail = user.email;
         document.getElementById('auth-box').style.display = 'none';
-        document.getElementById('user-dashboard').style.display = 'block';
-        document.getElementById('user-name').innerText = user.name;
+        document.getElementById('dashboard').style.display = 'block';
         renderPolicies(user.policies);
-    } else {
-        alert("Invalid login details");
     }
 }
 
-// Handle Add Policy
-async function addPolicy(e) {
-    if(e) e.preventDefault();
+async function addPolicy() {
     const payload = {
-        email: currentUserEmail,
-        policyNumber: document.getElementById('p-number').value,
-        dob: document.getElementById('p-dob') ? document.getElementById('p-dob').value : "N/A",
-        premium: document.getElementById('p-premium').value,
-        mode: document.getElementById('p-mode') ? document.getElementById('p-mode').value : "Monthly"
+        email: userEmail,
+        policyNumber: document.getElementById('p-num').value,
+        dob: document.getElementById('p-dob').value,
+        premium: document.getElementById('p-prem').value,
+        mode: document.getElementById('p-mode').value
     };
 
     const res = await fetch('/api/add-policy', {
@@ -49,20 +35,17 @@ async function addPolicy(e) {
     });
 
     if (res.ok) {
-        const updatedPolicies = await res.json();
-        renderPolicies(updatedPolicies);
-        alert("Policy added!");
-    } else {
-        alert("Error adding policy");
+        const policies = await res.json();
+        renderPolicies(policies);
+        alert("Policy Added!");
     }
 }
 
 function renderPolicies(policies) {
-    const container = document.getElementById('policies-container');
-    container.innerHTML = policies.map(p => `
-        <div class="policy-item" style="border-left: 4px solid #007bff; background: #f9f9f9; padding: 10px; margin: 10px 0;">
-            <strong>Policy #:</strong> ${p.policyNumber}<br>
-            <strong>Premium:</strong> ₹${p.premium} | <strong>Mode:</strong> ${p.mode || 'Monthly'}
+    const list = document.getElementById('policy-list');
+    list.innerHTML = policies.map(p => `
+        <div class="policy-card">
+            <strong>#${p.policyNumber}</strong> - ₹${p.premium} (${p.mode})
         </div>
     `).join('');
 }
