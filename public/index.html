@@ -1,67 +1,54 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swa-aim Insurance Portal</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Swa-aim Portal | Investment Tracking</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="auth-box" class="card">
-        <h1>Swa-aim Insurance</h1>
-        <div class="tabs">
-            <button id="tab-login" class="active" onclick="setMode('login')">Login</button>
-            <button id="tab-reg" onclick="setMode('reg')">Register</button>
+
+    <div id="auth-box" class="container">
+        <h1>Swa-aim Portal</h1>
+        <div class="tab-system">
+            <button id="tab-login" class="active" onclick="showTab('login')">Login</button>
+            <button id="tab-reg" onclick="showTab('reg')">Register</button>
         </div>
 
-        <div id="login-fields">
-            <label for="l-email">Email Address</label>
+        <form id="login-form">
             <input type="email" id="l-email" placeholder="Email Address" required>
-            <label for="l-pass">Password</label>
             <input type="password" id="l-pass" placeholder="Password" required>
-            <button class="btn-main" onclick="handleAuth('login')">Login</button>
-            <p id="login-message" class="message"></p>
-        </div>
+            <button type="submit">Login</button>
+            <p class="toggle-text" onclick="toggleForgot(true)">Forgot Password?</p>
+        </form>
 
-        <div id="reg-fields" style="display:none;">
-            <label for="r-name">Full Name</label>
+        <form id="reg-form" style="display: none;">
             <input type="text" id="r-name" placeholder="Full Name" required>
-            <label for="r-email">Email Address</label>
-            <input type="email" id="r-email" placeholder="Email Address" required>
-            <label for="r-pass">Password</label>
+            <input type="email" id="r-email" placeholder="Email" required>
+            <input type="tel" id="r-phone" placeholder="Phone Number" required>
             <input type="password" id="r-pass" placeholder="Password" required>
-            <button class="btn-main" onclick="handleAuth('reg')">Create Account</button>
-            <p id="reg-message" class="message"></p>
+            <button type="submit">Create Account</button>
+        </form>
+
+        <div id="forgot-box" style="display: none;">
+            <h3>Reset Password</h3>
+            <p>Please contact support to reset your password.</p>
+            <button onclick="toggleForgot(false)">Back to Login</button>
         </div>
     </div>
 
-    <div id="dashboard" class="card" style="display:none;">
-        <h2>Welcome, <span id="user-name"></span></h2>
-        <button id="logout-btn" class="btn-secondary" onclick="logout()">Logout</button>
-        <div id="policy-list">
-            <p>Loading policies...</p>
+    <div id="user-dashboard" class="container" style="display: none;">
+        <div class="header">
+            <h2>Welcome, <span id="user-name">User</span>!</h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
-        <hr>
-        <h3>Add New Policy</h3>
-        <label for="p-num">Policy Number</label>
-        <input type="text" id="p-num" placeholder="Policy Number" required>
-        <label for="p-dob">Date of Birth</label>
-        <input type="date" id="p-dob" required>
-        <label for="p-prem">Premium Amount</label>
-        <input type="number" id="p-prem" placeholder="Premium Amount" required>
-        <label for="p-mode">Payment Mode</label>
-        <select id="p-mode" required>
-            <option value="Monthly">Monthly</option>
-            <option value="Quarterly">Quarterly</option>
-            <option value="Yearly">Yearly</option>
-        </select>
-        <button class="btn-main" onclick="addPolicy()">Add Policy</button>
-        <p id="policy-message" class="message"></p>
+        
+        <h3>Your Policies</h3>
+        <div id="policies-container">
+            <p>Loading your investments...</p>
+        </div>
     </div>
 
-    <noscript>
-        <p>This site requires JavaScript to function properly. Please enable it in your browser.</p>
-    </noscript>
     <script src="script.js"></script>
 </body>
 </html>
