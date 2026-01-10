@@ -1,36 +1,21 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
+const router = express.Router();
+const User = require('../models/User'); // Points to your models folder
 
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// 1. Serve static files from the 'public' folder
-// This makes index.html, style.css, and script.js accessible
-app.use(express.static(path.join(__dirname, 'public')));
-
-// 2. Database Connection
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB Connected'))
-    .catch((err) => console.error('❌ MongoDB Connection Error:', err));
-
-// 3. API Routes 
-// Ensure your folder is named 'routes' and file is 'auth.js'
-const authRoutes = require('./routes/auth');
-app.use('/api', authRoutes);
-
-// 4. Catch-all route 
-// Solves the "Cannot GET /" and Netlify 404 issues
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Login Route
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        // Basic check to see if it works
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: "User not found" });
+        
+        // Add your bcrypt password comparison here...
+        
+        res.status(200).json({ message: "Login success", user: { name: user.name } });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+module.exports = router;
