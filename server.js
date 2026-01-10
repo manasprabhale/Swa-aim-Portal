@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const authRoutes = require('./routes/auth');
 require('dotenv').config();
 
 const app = express();
@@ -11,20 +10,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve Static Files from the 'public' folder
+// 1. Serve static files from the 'public' folder
+// This makes index.html, style.css, and script.js accessible
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database Connection
+// 2. Database Connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB Connected'))
     .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 
-// API Routes (Ensure your auth.js exists in a folder named routes)
+// 3. API Routes 
+// Ensure your folder is named 'routes' and file is 'auth.js'
 const authRoutes = require('./routes/auth');
 app.use('/api', authRoutes);
 
-// Catch-all route: MUST be at the bottom
-// This serves index.html for any request that isn't an API call
+// 4. Catch-all route 
+// Solves the "Cannot GET /" and Netlify 404 issues
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -33,4 +34,3 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
-
