@@ -1,205 +1,138 @@
-/* Swa-aim Insurance Portal - Professional Design */
 :root {
-    --primary-navy: #1a365d;
-    --accent-blue: #3182ce;
-    --success-green: #38a169;
-    --danger-red: #e53e3e;
-    --bg-gray: #f7fafc;
-    --border: #e2e8f0;
-    --white: #ffffff;
-    --text-gray: #4a5568;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg: #f3f4f6;
+    --card-bg: #ffffff;
+    --text: #1f2937;
+    --text-light: #6b7280;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-gray);
+    background-color: var(--bg);
+    color: var(--text);
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: var(--text-gray);
 }
 
-/* Main Container */
-.card {
-    background: var(--white);
-    width: 100%;
-    max-width: 440px;
-    padding: 2.5rem;
+.container {
+    background: var(--card-bg);
+    padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    box-sizing: border-box;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
 }
 
-h1 {
-    color: var(--primary-navy);
+h1, h2 {
     text-align: center;
-    font-size: 1.75rem;
+    color: var(--primary);
     margin-bottom: 1.5rem;
-    font-weight: 800;
 }
 
-h2, h3 {
-    color: var(--primary-navy);
-    margin-bottom: 1rem;
-}
-
-/* Labels */
-label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--primary-navy);
-}
-
-/* Login/Register Switcher */
-.tabs {
+/* Tab Styling */
+.tab-system {
     display: flex;
-    background: #edf2f7;
-    padding: 4px;
-    border-radius: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
 }
 
-.tabs button {
+.tab-system button {
     flex: 1;
+    padding: 0.75rem;
     border: none;
-    padding: 10px;
-    background: transparent;
+    background: none;
     cursor: pointer;
     font-weight: 600;
-    color: #4a5568;
-    border-radius: 6px;
+    color: var(--text-light);
     transition: 0.3s;
 }
 
-.tabs button.active {
-    background: var(--white);
-    color: var(--primary-navy);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.tab-system button.active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
 }
 
-/* Inputs & Select */
-input, select {
-    width: 100%;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 14px;
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+input {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
+    font-size: 1rem;
 }
 
-input:focus, select:focus {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-input:invalid {
-    border-color: var(--danger-red);
-}
-
-/* Buttons */
-.btn-main {
-    width: 100%;
-    background-color: var(--primary-navy);
+button[type="submit"] {
+    background-color: var(--primary);
     color: white;
-    padding: 14px;
+    padding: 0.75rem;
     border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-main:hover:not(:disabled) {
-    background-color: var(--accent-blue);
-}
-
-.btn-main:disabled {
-    background-color: #a0aec0;
-    cursor: not-allowed;
-}
-
-.btn-secondary {
-    background-color: var(--danger-red);
-    color: white;
-    border: none;
-    padding: 8px 16px;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
-    margin-bottom: 1rem;
+    transition: 0.2s;
 }
 
-.btn-secondary:hover {
-    background-color: #c53030;
+button[type="submit"]:hover {
+    background-color: var(--primary-hover);
 }
 
-/* Messages */
-.message {
-    margin-top: 1rem;
-    font-size: 14px;
+.toggle-text {
     text-align: center;
+    font-size: 0.875rem;
+    color: var(--primary);
+    cursor: pointer;
+    margin-top: 1rem;
 }
 
-.error {
-    color: var(--danger-red);
+/* Dashboard Styling */
+#user-dashboard {
+    max-width: 600px;
 }
 
-.success {
-    color: var(--success-green);
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
 }
 
-/* Dashboard & Policy List */
-#policy-list {
-    margin-bottom: 2rem;
+.logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .policy-item {
-    background: #f8fafc;
-    border-left: 5px solid var(--primary-navy);
-    padding: 15px;
-    margin-bottom: 12px;
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    border-left: 4px solid var(--primary);
+}
+
+.badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    font-size: 14px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
-}
-
-.policy-item:hover {
-    transform: translateY(-2px);
-}
-
-.policy-item strong {
-    color: var(--primary-navy);
-    display: block;
-    margin-bottom: 4px;
-}
-
-hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 2rem 0;
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-    .card {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    input, select, .btn-main {
-        font-size: 16px; /* Prevents zoom on iOS */
-    }
+    font-size: 0.75rem;
 }
