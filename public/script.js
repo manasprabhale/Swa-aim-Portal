@@ -1,5 +1,5 @@
 // REPLACE THIS with your actual Render URL after deploying the backend
-const API = "https://your-app-name.onrender.com/api"; 
+const API = "https://swaim-portal.onrender.com/api"; 
 
 // Global state
 let currentUser = null;
