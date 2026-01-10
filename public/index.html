@@ -15,34 +15,53 @@
         </div>
 
         <div id="login-fields">
-            <input type="email" id="l-email" placeholder="Email Address">
-            <input type="password" id="l-pass" placeholder="Password">
+            <label for="l-email">Email Address</label>
+            <input type="email" id="l-email" placeholder="Email Address" required>
+            <label for="l-pass">Password</label>
+            <input type="password" id="l-pass" placeholder="Password" required>
             <button class="btn-main" onclick="handleAuth('login')">Login</button>
+            <p id="login-message" class="message"></p>
         </div>
 
         <div id="reg-fields" style="display:none;">
-            <input type="text" id="r-name" placeholder="Full Name">
-            <input type="email" id="r-email" placeholder="Email Address">
-            <input type="password" id="r-pass" placeholder="Password">
+            <label for="r-name">Full Name</label>
+            <input type="text" id="r-name" placeholder="Full Name" required>
+            <label for="r-email">Email Address</label>
+            <input type="email" id="r-email" placeholder="Email Address" required>
+            <label for="r-pass">Password</label>
+            <input type="password" id="r-pass" placeholder="Password" required>
             <button class="btn-main" onclick="handleAuth('reg')">Create Account</button>
+            <p id="reg-message" class="message"></p>
         </div>
     </div>
 
     <div id="dashboard" class="card" style="display:none;">
-    <h2>Welcome, <span id="user-name"></span></h2>
-    <div id="policy-list"></div>
-    <hr>
-    <h3>Add New Policy</h3>
-    <input type="text" id="p-num" placeholder="Policy Number">
-    <input type="date" id="p-dob">
-    <input type="number" id="p-prem" placeholder="Premium Amount">
-    <select id="p-mode">
-        <option value="Monthly">Monthly</option>
-        <option value="Quarterly">Quarterly</option>
-        <option value="Yearly">Yearly</option>
-    </select>
-    <button class="btn-main" onclick="addPolicy()">Add Policy</button>
-</div>
+        <h2>Welcome, <span id="user-name"></span></h2>
+        <button id="logout-btn" class="btn-secondary" onclick="logout()">Logout</button>
+        <div id="policy-list">
+            <p>Loading policies...</p>
+        </div>
+        <hr>
+        <h3>Add New Policy</h3>
+        <label for="p-num">Policy Number</label>
+        <input type="text" id="p-num" placeholder="Policy Number" required>
+        <label for="p-dob">Date of Birth</label>
+        <input type="date" id="p-dob" required>
+        <label for="p-prem">Premium Amount</label>
+        <input type="number" id="p-prem" placeholder="Premium Amount" required>
+        <label for="p-mode">Payment Mode</label>
+        <select id="p-mode" required>
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Yearly">Yearly</option>
+        </select>
+        <button class="btn-main" onclick="addPolicy()">Add Policy</button>
+        <p id="policy-message" class="message"></p>
+    </div>
+
+    <noscript>
+        <p>This site requires JavaScript to function properly. Please enable it in your browser.</p>
+    </noscript>
     <script src="script.js"></script>
 </body>
 </html>
