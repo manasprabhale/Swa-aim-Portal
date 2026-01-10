@@ -1,5 +1,5 @@
 // 1. REPLACE THIS URL with your actual Render Web Service URL
-const API = "https://swa-aim-portal.onrender.com/api"; 
+const API = "https://swaim-portal.onrender.com/api";
 
 function showTab(type) {
     toggleForgot(false);
