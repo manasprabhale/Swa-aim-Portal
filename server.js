@@ -10,26 +10,26 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static files from the 'public' folder
+// Link the 'public' folder for the frontend
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
 
-// Route to serve login.html as the landing page
+// Landing page route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// Route for the dashboard
+// Dashboard route
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// MongoDB Connection (Ensure MONGODB_URI is set on Render)
+// MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ MongoDB Connected'))
-    .catch(err => console.error('❌ MongoDB Error:', err));
+    .then(() => console.log('✅ Connected to Database'))
+    .catch((err) => console.error('❌ Connection Error:', err));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server live on port ${PORT}`));
