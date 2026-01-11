@@ -8,23 +8,34 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="dashboard-container">
-        <header>
-            <div class="logo">🛡️ Swa-aim Portal</div>
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div class="dashboard-layout">
+        <header class="top-bar">
+            <div class="brand">🛡️ Swa-aim Portal</div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </header>
 
-        <div class="stats-row">
-            <div class="stat-card"><h3>Policies</h3><p id="policyCount">0</p></div>
-            <div class="stat-card"><h3>Total Premium</h3><p id="totalPremium">₹0</p></div>
-            <div class="stat-card"><h3>Sum Assured</h3><p id="totalSum">₹0</p></div>
+        <div class="stats-container">
+            <div class="stat-card">
+                <i class="fas fa-file-invoice"></i>
+                <div class="info"><h3>Policies</h3><p id="policyCount">0</p></div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-indian-rupee-sign"></i>
+                <div class="info"><h3>Total Premium</h3><p id="totalPremium">₹0</p></div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-shield-halved"></i>
+                <div class="info"><h3>Sum Assured</h3><p id="totalSum">₹0</p></div>
+            </div>
         </div>
 
-        <main>
-            <section class="policy-form-card">
-                <h3>Add New Protected Policy</h3>
+        <main class="content">
+            <section class="card">
+                <h3><i class="fas fa-plus-circle"></i> Add New Policy</h3>
                 <div class="form-grid">
-                    <input type="text" id="planName" placeholder="Plan Name">
+                    <input type="text" id="planName" placeholder="Plan Name (e.g. Life Shield)">
                     <input type="text" id="policyNumber" placeholder="Policy Number">
                     <select id="frequency">
                         <option value="Yearly">Yearly</option>
@@ -36,29 +47,35 @@
                 <button class="btn-primary" onclick="savePolicy()">Save Policy Securely</button>
             </section>
 
-            <section class="policy-list">
-                <h3>Your Active Policies</h3>
+            <section class="card table-card">
+                <h3>Active Coverage</h3>
                 <table>
                     <thead>
                         <tr><th>Plan Name</th><th>Premium</th><th>Frequency</th><th>Status</th></tr>
                     </thead>
-                    <tbody id="policyTableBody"></tbody>
+                    <tbody id="policyTableBody">
+                        </tbody>
                 </table>
             </section>
         </main>
     </div>
 
     <script>
-        // REDIRECT GUARD: Prevents loop and unauthorized access
+        // REDIRECT GUARD: Prevents unauthorized access and loops
         const userId = localStorage.getItem('userId');
-        if (!userId) { window.location.href = "/"; }
+        if (!userId) { 
+            window.location.href = "/"; 
+        }
 
         function logout() {
             localStorage.clear();
-            window.location.href = "/"; // Fixed redirect path
+            window.location.href = "/";
         }
 
-        // Logic for savePolicy() and fetchPolicies() goes here
+        async function savePolicy() {
+            // Your logic for saving policy to /api/auth/add-policy
+            console.log("Saving policy for user:", userId);
+        }
     </script>
 </body>
 </html>
