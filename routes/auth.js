@@ -8,7 +8,6 @@ const Policy = require('../models/Policy');
 // ==========================================
 // 1. CONFIGURE EMAIL TRANSPORTER
 // ==========================================
-// We use host/port/secure for better compatibility with cloud servers like Render
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -31,7 +30,6 @@ router.post('/register', async (req, res) => {
         user = new User({ name, email, phone, password });
         await user.save();
         
-        // Welcome Email
         try {
             await transporter.sendMail({
                 from: `"Swa-aim Portal" <${process.env.EMAIL_USER}>`,
@@ -70,43 +68,40 @@ router.post('/login', async (req, res) => {
 });
 
 // ==========================================
-// 4. FORGOT PASSWORD (DEBUG VERSION)
+// 4. FORGOT PASSWORD
 // ==========================================
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
-        console.log("Forgot Password Request for:", email);
-
         const user = await User.findOne({ email });
+        
         if (!user) {
             return res.status(404).json({ message: "Email not registered." });
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret_key', { expiresIn: '15m' });
+        const token = jwt.sign(
+            { id: user._id }, 
+            process.env.JWT_SECRET || 'fallback_secret', 
+            { expiresIn: '15m' }
+        );
+        
         const resetLink = `${req.headers.origin}/reset-password.html?token=${token}`;
 
-        // Send Email
         await transporter.sendMail({
             from: `"Swa-aim Support" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: 'Password Reset Request',
             html: `
                 <h3>Reset Your Password</h3>
-                <p>Click the button below to reset your password. This link expires in 15 minutes.</p>
+                <p>Click the button below to reset your password. Link expires in 15 mins.</p>
                 <a href="${resetLink}" style="background:#2563eb; color:white; padding:10px 20px; text-decoration:none; border-radius:5px; display:inline-block;">Reset Password</a>
             `
         });
 
-        console.log("Reset email sent successfully to:", email);
         res.json({ message: "Reset link sent to your email!" });
-
     } catch (err) {
-        // This log will appear in your RENDER DASHBOARD LOGS
         console.error("CRITICAL EMAIL ERROR:", err);
-        res.status(500).json({ 
-            message: "Error sending reset email", 
-            error: err.message 
-        });
+        res.status(500).json({ message: "Error sending reset email", error: err.message });
     }
 });
 
@@ -116,6 +111,50 @@ router.post('/forgot-password', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
         
-        const user
+        const user = await User.findById(decoded.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ message: "Password updated successfully!" });
+    } catch (err) {
+        res.status(400).json({ message: "Invalid or expired link." });
+    }
+});
+
+// ==========================================
+// 6. PROFILE & POLICIES (FIXED LINE 121)
+// ==========================================
+router.put('/profile/:userId', async (req, res) => {
+    try {
+        const { name, phone } = req.body;
+        // FIXED: Added the initializer for the const 'user'
+        const user = await User.findByIdAndUpdate(
+            req.params.userId, 
+            { name, phone }, 
+            { new: true }
+        );
+        res.json({ message: "Profile updated!", user });
+    } catch (err) {
+        res.status(500).json({ message: "Update failed" });
+    }
+});
+
+router.get('/policies/:userId', async (req, res) => {
+    try {
+        const { search } = req.query;
+        let query = { userId: req.params.userId };
+        if (search) {
+            query.planName = { $regex: search, $options: 'i' }; 
+        }
+        const policies = await Policy.find(query);
+        res.json(policies);
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching policies" });
+    }
+});
+
+module.exports = router;
