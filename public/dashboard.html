@@ -2,27 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Swa-aim Portal - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swa-aim - Premium Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <h1>Swa-aim Dashboard</h1>
-        <button onclick="logout()">Logout</button>
-    </nav>
-    <div id="content">
+    <div class="dashboard-wrapper">
+        <nav class="top-nav">
+            <div class="brand">🛡️ Swa-aim Portal</div>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </nav>
+
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Total Policies</h3><p id="count">0</p></div>
+            <div class="stat-card"><h3>Monthly Premium</h3><p id="totalPremium">₹0</p></div>
+            <div class="stat-card"><h3>Sum Assured</h3><p id="totalSum">₹0</p></div>
         </div>
+
+        <div class="main-content">
+            <section class="form-section">
+                <h3><i class="fa-solid fa-plus"></i> Add New Policy</h3>
+                <div class="input-group">
+                    <input type="text" id="planName" placeholder="Plan Name">
+                    <input type="text" id="policyNumber" placeholder="Policy Number">
+                    <select id="frequency"><option value="Yearly">Yearly</option><option value="Monthly">Monthly</option></select>
+                    <input type="number" id="premiumAmount" placeholder="Premium (₹)">
+                    <input type="number" id="sumAssured" placeholder="Sum Assured (₹)">
+                    <button class="save-btn" onclick="savePolicy()">Save Policy Securely</button>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <h3>Your Protected Policies</h3>
+                <table id="policyTable">
+                    <thead><tr><th>Plan</th><th>Premium</th><th>Frequency</th><th>Status</th></tr></thead>
+                    <tbody id="policyBody"></tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
     <script>
-        // REDIRECT GUARD: If no userId is found, send back to login
+        // REDIRECT GUARD: Prevents unauthorized access and loops
         const userId = localStorage.getItem('userId');
-        if (!userId) {
-            window.location.href = "/"; 
-        }
+        if (!userId) { window.location.href = "/"; }
 
         function logout() {
             localStorage.clear();
             window.location.href = "/";
         }
+
+        // Logic for fetching/saving policies would go here
     </script>
 </body>
 </html>
