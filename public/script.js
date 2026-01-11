@@ -21,16 +21,16 @@ function showTab(type) {
 }
 
 function toggleForgot(show) {
-    const authBox = document.getElementById('login-form');
+    const loginForm = document.getElementById('login-form');
     const tabSys = document.querySelector('.tab-system');
     const forgotBox = document.getElementById('forgot-box');
     
     if (show) {
-        authBox.style.display = 'none';
+        loginForm.style.display = 'none';
         tabSys.style.display = 'none';
         forgotBox.style.display = 'block';
     } else {
-        authBox.style.display = 'flex';
+        loginForm.style.display = 'flex';
         tabSys.style.display = 'flex';
         forgotBox.style.display = 'none';
     }
@@ -52,11 +52,10 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            // Success: Hide Auth and Show Dashboard
             document.getElementById('auth-box').style.display = 'none';
             document.getElementById('user-dashboard').style.display = 'block';
             document.getElementById('user-name').innerText = data.user.name;
-            fetchPolicies(); // Load user data
+            fetchPolicies(); 
         } else {
             alert(data.message || "Login Failed");
         }
@@ -96,15 +95,16 @@ document.getElementById('reg-form').addEventListener('submit', async (e) => {
 
 // 4. Logout Logic
 function logout() {
-    window.location.reload(); // Simple way to clear state and go back to login
+    window.location.reload(); 
 }
 
-// 5. Placeholder for Data Fetching
+// 5. Data Fetching (Fixed Section)
 async function fetchPolicies() {
     const container = document.getElementById('policies-container');
-    // In a real app, you'd fetch from `${API}/policies`
-    container.innerHTML = `<div class="policy-item">
-        <strong>Standard Life Plan</strong> <span class="badge">Active</span>
-        <p><p>Welcome to your dashboard.</p>
+    // Final fix for the unfinished template literal from your error logs
+    container.innerHTML = `
+        <div class="policy-item" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px;">
+            <strong>Standard Life Plan</strong> <span class="badge" style="background:#d4edda; color:#155724; padding:2px 8px; border-radius:4px; font-size:0.8rem;">Active</span>
+            <p style="margin: 5px 0 0 0; color: #666;">Your policy is currently in good standing.</p>
         </div>`;
-} // Added missing closing brace
+}
