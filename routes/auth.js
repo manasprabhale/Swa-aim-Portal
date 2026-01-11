@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
         pass: (process.env.EMAIL_PASS || "").trim()
     }
     tls: {
-        rejectUnauthorized: false // Helps avoid connection blocks on cloud servers
+    rejectUnauthorized: false // Helps avoid connection blocks on cloud servers
     }
 });
 
