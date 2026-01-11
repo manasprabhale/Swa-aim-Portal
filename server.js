@@ -4,33 +4,44 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+const authRoutes = require('./routes/auth');
+
 const app = express();
 
-// 1. Middlewares
-app.use(express.json()); // Essential for reading JSON from frontend
+// --- MIDDLEWARE ---
+app.use(express.json());
 app.use(cors());
 
-// 2. Serve Static Frontend Files
-// This ensures that index.html and reset-password.html are visible
+// --- SERVE STATIC FILES ---
+// This tells Express that all your HTML, CSS, and JS are in the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 3. Database Connection
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ Connected to Swa-aim MongoDB'))
-    .catch(err => console.error('❌ MongoDB Connection Error:', err));
+// --- API ROUTES ---
+app.use('/api/auth', authRoutes);
 
-// 4. Import Routes
-const authRoutes = require('./routes/auth');
-app.use('/api', authRoutes); // All routes in auth.js will start with /api
-
-// 5. Handle Reset Password Routing
-// Since we have a separate file for reset, this helps the browser find it
-app.get('/reset-password', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+// --- FRONTEND ROUTES ---
+// Root route: sends index.html (your login/home page)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 6. Start the Server
-const PORT = process.env.PORT || 10000;
+// Dashboard route: sends dashboard.html
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+// Fallback: If a user refreshes a page, send them back to index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// --- DATABASE CONNECTION ---
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch((err) => console.error('❌ MongoDB connection error:', err));
+
+// --- START SERVER ---
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Swa-aim Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
