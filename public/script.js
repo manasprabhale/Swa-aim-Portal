@@ -36,7 +36,35 @@ function toggleForgot(show) {
     }
 }
 
-// 2. Login Logic
+// 2. Data Fetching Logic (Now correctly handles real data)
+async function fetchPolicies(userId) {
+    const container = document.getElementById('policies-container');
+    
+    try {
+        const response = await fetch(`${API}/policies/${userId}`);
+        const policies = await response.json();
+
+        if (!policies || policies.length === 0) {
+            container.innerHTML = "<p>No active policies found.</p>";
+            return;
+        }
+
+        container.innerHTML = policies.map(p => `
+            <div class="policy-item" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px;">
+                <span class="badge" style="float:right; background:#d4edda; color:#155724; padding:2px 8px; border-radius:4px; font-size:0.8rem;">${p.status}</span>
+                <strong>${p.planName}</strong>
+                <p style="margin: 5px 0;">Investment: ₹${p.amount}</p>
+                <small style="color: #666;">${p.description || ''}</small>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        console.error("Fetch Policies Error:", err);
+        container.innerHTML = "<p>Error loading policies from server.</p>";
+    }
+}
+
+// 3. Login Logic
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('l-email').value;
@@ -55,7 +83,9 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             document.getElementById('auth-box').style.display = 'none';
             document.getElementById('user-dashboard').style.display = 'block';
             document.getElementById('user-name').innerText = data.user.name;
-            fetchPolicies(); 
+            
+            // PASSING THE USER ID TO FETCH REAL DATA
+            fetchPolicies(data.user.id); 
         } else {
             alert(data.message || "Login Failed");
         }
@@ -65,7 +95,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     }
 });
 
-// 3. Registration Logic
+// 4. Registration Logic
 document.getElementById('reg-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('r-name').value;
@@ -93,18 +123,7 @@ document.getElementById('reg-form').addEventListener('submit', async (e) => {
     }
 });
 
-// 4. Logout Logic
+// 5. Logout Logic
 function logout() {
     window.location.reload(); 
-}
-
-// 5. Data Fetching (Fixed Section)
-async function fetchPolicies() {
-    const container = document.getElementById('policies-container');
-    // Final fix for the unfinished template literal from your error logs
-    container.innerHTML = `
-        <div class="policy-item" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px;">
-            <strong>Standard Life Plan</strong> <span class="badge" style="background:#d4edda; color:#155724; padding:2px 8px; border-radius:4px; font-size:0.8rem;">Active</span>
-            <p style="margin: 5px 0 0 0; color: #666;">Your policy is currently in good standing.</p>
-        </div>`;
 }
