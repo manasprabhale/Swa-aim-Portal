@@ -2,65 +2,105 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swa-aim Portal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Swa-aim | Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7fe; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { background: #2563eb; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        .policy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .policy-card { background: white; padding: 20px; border-left: 5px solid #2563eb; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .policy-card h3 { margin-top: 0; color: #1e293b; }
+        .badge { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; }
+    </style>
 </head>
 <body>
 
-    <div id="auth-box" class="container">
-        <h1>Swa-aim Portal</h1>
-        <div class="tab-system">
-            <button id="tab-login" class="active" onclick="showTab('login')">Login</button>
-            <button id="tab-reg" onclick="showTab('reg')">Register</button>
-        </div>
-        <form id="login-form">
-    <input type="email" id="l-email" placeholder="Email" required>
-    <input type="password" id="l-pass" placeholder="Password" required>
-    <button type="submit">Login</button>
-            
-    <p style="text-align: center; margin-top: 15px; font-size: 0.85rem;">
-        <a href="#" onclick="toggleForgot(true)" style="color: #2563eb; text-decoration: none;">Forgot Password?</a>
-    </p>
-</form>
+<div class="container">
+    <h1>Welcome to your Portal</h1>
 
-<div id="forgot-box" style="display: none; text-align: center;">
-    <h3>Reset Password</h3>
-    <p style="color: #666; font-size: 0.85rem; margin-bottom: 15px;">Enter your email to receive a reset link.</p>
-    <input type="email" id="forgot-email" placeholder="Enter your email" style="width: 100%; margin-bottom: 10px;">
-    <button onclick="sendResetLink()" id="send-reset-btn" style="background: #2563eb; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Send Reset Link</button>
-    <p onclick="toggleForgot(false)" style="margin-top: 15px; font-size: 0.85rem; color: #666; cursor: pointer;">Back to Login</p>
-</div>
-        <form id="reg-form" style="display: none;">
-            <input type="text" id="r-name" placeholder="Name" required>
-            <input type="email" id="r-email" placeholder="Email" required>
-            <input type="tel" id="r-phone" placeholder="Phone" required>
-            <input type="password" id="r-pass" placeholder="Password" required>
-            <button type="submit">Create Account</button>
+    <div class="card">
+        <h3>Add New Policy Details</h3>
+        <form id="policyForm">
+            <input type="text" id="planName" placeholder="Plan Name (e.g., Term Life)" required>
+            <input type="text" id="policyNumber" placeholder="Policy Number" required>
+            <select id="paymentMode" required>
+                <option value="">Select Payment Mode</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Quarterly">Quarterly</option>
+                <option value="Half-Yearly">Half-Yearly</option>
+                <option value="Yearly">Yearly</option>
+            </select>
+            <input type="number" id="premiumAmount" placeholder="Premium Amount (₹)" required>
+            <input type="number" id="sumAssured" placeholder="Sum Assured (₹)" required>
+            <button type="submit">Secure My Policy</button>
         </form>
     </div>
 
-    <div id="user-dashboard" class="container" style="display: none; max-width: 600px;">
-        <div class="header">
-            <h2>Welcome, <span id="user-name">User</span></h2>
-            <button onclick="toggleProfile()" style="background:var(--primary); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Settings</button>
-            <button onclick="logout()" style="background:#ff4444; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Logout</button>
+    <h2>Your Active Policies</h2>
+    <div id="policyList" class="policy-grid">
         </div>
+</div>
 
-        <div id="profile-section" style="display:none; margin-top:20px; padding:15px; background:#f9f9f9; border-radius:10px;">
-            <h3>Edit Profile</h3>
-            <input type="text" id="edit-name" placeholder="Update Name" style="width:100%; margin-top:10px;">
-            <input type="tel" id="edit-phone" placeholder="Update Phone" style="width:100%; margin-top:10px;">
-            <button onclick="updateProfile()" style="margin-top:10px; background:green; color:white; border:none; padding:10px; width:100%; border-radius:5px; cursor:pointer;">Save Changes</button>
-        </div>
+<script>
+    const API_URL = "https://swaim-portal.onrender.com/api/auth";
+    const userId = localStorage.getItem('userId');
 
-        <div style="margin-top: 20px;">
-            <input type="text" id="search-input" placeholder="Search policies..." onkeyup="filterPolicies()" style="width:100%;">
-        </div>
-        
-        <div id="policies-container" style="margin-top: 20px;"></div>
-    </div>
+    // 1. Fetch and Display Policies
+    async function loadPolicies() {
+        const res = await fetch(`${API_URL}/policies/${userId}`);
+        const data = await res.json();
+        const list = document.getElementById('policyList');
+        list.innerHTML = data.length === 0 ? "<p>No policies found. Add your first one above!</p>" : "";
 
-    <script src="script.js"></script>
+        data.forEach(p => {
+            list.innerHTML += `
+                <div class="policy-card">
+                    <h3>${p.planName} <span class="badge">${p.status}</span></h3>
+                    <p><strong>Policy #:</strong> ${p.policyNumber}</p>
+                    <p><strong>Premium:</strong> ₹${p.premiumAmount.toLocaleString()} (${p.paymentMode})</p>
+                    <p><strong>Sum Assured:</strong> ₹${p.sumAssured.toLocaleString()}</p>
+                </div>
+            `;
+        });
+    }
+
+    // 2. Handle Form Submission
+    document.getElementById('policyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.innerText = "Saving...";
+
+        const payload = {
+            userId,
+            planName: document.getElementById('planName').value,
+            policyNumber: document.getElementById('policyNumber').value,
+            paymentMode: document.getElementById('paymentMode').value,
+            premiumAmount: document.getElementById('premiumAmount').value,
+            sumAssured: document.getElementById('sumAssured').value
+        };
+
+        const res = await fetch(`${API_URL}/add-policy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("Policy added successfully!");
+            e.target.reset();
+            loadPolicies();
+        } else {
+            alert("Error: Likely a duplicate Policy Number.");
+        }
+        btn.innerText = "Secure My Policy";
+    });
+
+    // Initial Load
+    if (!userId) { window.location.href = "login.html"; }
+    else { loadPolicies(); }
+</script>
+
 </body>
 </html>
