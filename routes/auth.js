@@ -9,10 +9,14 @@ const Policy = require('../models/Policy');
 // 1. CONFIGURE EMAIL TRANSPORTER
 // ==========================================
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
-        user: process.env.EMAIL_USER, // Set in Render Env Variables
-        pass: process.env.EMAIL_PASS  // Your 16-character App Password
+        user: process.env.EMAIL_USER.trim(), // .trim() removes accidental spaces
+        pass: process.env.EMAIL_PASS.trim()  // .trim() removes accidental spaces
+    }
+});
     }
 });
 
