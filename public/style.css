@@ -10,7 +10,7 @@
 }
 
 * {
-    box-sizing: border-box; /* Prevents padding from breaking layout */
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
@@ -23,7 +23,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px; /* Space for mobile screens */
+    padding: 20px;
 }
 
 .container {
@@ -33,7 +33,6 @@ body {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     width: 100%;
     max-width: 450px;
-    transition: transform 0.3s ease;
 }
 
 h1 {
@@ -71,7 +70,7 @@ h1 {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Forms */
+/* Forms & Inputs */
 form {
     display: flex;
     flex-direction: column;
@@ -84,8 +83,57 @@ input {
     border-radius: 8px;
     outline: none;
     font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s;
 }
 
 input:focus {
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Submit Buttons */
+button[type="submit"] {
+    background-color: var(--primary);
+    color: white;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button[type="submit"]:hover {
+    background-color: var(--primary-hover);
+}
+
+.toggle-text {
+    text-align: center;
+    color: var(--primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.toggle-text:hover {
+    text-decoration: underline;
+}
+
+/* Dashboard Styles */
+.policy-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.badge {
+    float: right;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: #dcfce7;
+    color: #166534;
+}
