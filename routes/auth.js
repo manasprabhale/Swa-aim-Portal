@@ -1,33 +1,33 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const Policy = require('../models/Policy');
-const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-// Login Route
+router.post('/register', async (req, res) => {
+    try {
+        const { name, email, phone, password } = req.body;
+        const userExists = await User.findOne({ email });
+        if (userExists) return res.status(400).json({ message: "User already exists" });
+
+        const user = await User.create({ name, email, phone, password });
+        res.status(201).json({ message: "Registration successful" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: "User not found" });
+        if (!user || !(await user.comparePassword(password))) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
-
-        res.json({ user: { id: user._id, name: user.name } });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token, user: { name: user.name, email: user.email } });
     } catch (err) {
-        res.status(500).json({ message: "Server Error" });
-    }
-});
-
-// Add Policy Route
-router.post('/add-policy', async (req, res) => {
-    try {
-        const newPolicy = new Policy(req.body);
-        await newPolicy.save();
-        res.status(201).json(newPolicy);
-    } catch (err) {
-        res.status(500).json({ message: "Failed to save policy" });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
