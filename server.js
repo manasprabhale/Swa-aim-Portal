@@ -4,37 +4,18 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-const authRoutes = require('./routes/auth');
 const app = express();
-
-// Middleware
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-// Serve Static Files (CSS, JS, Images)
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ MongoDB Connected'))
+    .catch(err => console.error('❌ DB Error:', err));
+
+app.use('/api', require('./routes/auth'));
+
 app.use(express.static(path.join(__dirname, 'public')));
-
-// API Routes
-app.use('/api/auth', authRoutes);
-
-// --- FRONTEND ROUTES ---
-// Default landing page (Login)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-// Dashboard page
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
-
-// MongoDB Connection
-// Note: MONGODB_URI must be set in Render Environment Variables
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ Connected to MongoDB Atlas'))
-    .catch((err) => console.error('❌ MongoDB Connection Error:', err));
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server on port ${PORT}`));
