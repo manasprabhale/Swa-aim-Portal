@@ -1,30 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { Resend } = require('resend'); // Import Resend
+const { Resend } = require('resend'); // Switch to Resend
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Policy = require('../models/Policy');
 
-// Initialize Resend with your API Key
+// Initialize Resend
+// Note: Ensure RESEND_API_KEY is added to Render Environment Variables
 const resend = new Resend(process.env.RESEND_API_KEY);
-// ==========================================
-// 1. CONFIGURE EMAIL TRANSPORTER (FIXED SYNTAX)
-// ==========================================
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, 
-    auth: {
-        user: (process.env.EMAIL_USER || "").trim(),
-        pass: (process.env.EMAIL_PASS || "").trim()
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
-});
 
 // ==========================================
-// 2. USER REGISTRATION
+// 1. USER REGISTRATION
 // ==========================================
 router.post('/register', async (req, res) => {
     try {
@@ -34,6 +20,19 @@ router.post('/register', async (req, res) => {
 
         user = new User({ name, email, phone, password });
         await user.save();
+        
+        // Optional: Send Welcome Email via Resend
+        try {
+            await resend.emails.send({
+                from: 'onboarding@resend.dev',
+                to: email,
+                subject: 'Welcome to Swa-aim!',
+                html: `<strong>Welcome ${name}!</strong><p>Account created successfully.</p>`
+            });
+        } catch (mailErr) {
+            console.log("Welcome email skipped: ", mailErr.message);
+        }
+
         res.status(201).json({ message: 'User registered successfully!' });
     } catch (err) {
         res.status(500).json({ message: 'Registration failed' });
@@ -41,7 +40,7 @@ router.post('/register', async (req, res) => {
 });
 
 // ==========================================
-// 3. USER LOGIN
+// 2. USER LOGIN
 // ==========================================
 router.post('/login', async (req, res) => {
     try {
@@ -61,43 +60,64 @@ router.post('/login', async (req, res) => {
 });
 
 // ==========================================
-// 4. FORGOT PASSWORD
+// 3. FORGOT PASSWORD (BYPASSES SMTP BLOCK)
 // ==========================================
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
         const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ message: "Email not found." });
+        
+        if (!user) {
+            return res.status(404).json({ message: "Email not registered." });
+        }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
+        const token = jwt.sign(
+            { id: user._id }, 
+            process.env.JWT_SECRET || 'secret_key', 
+            { expiresIn: '15m' }
+        );
+        
         const resetLink = `${req.headers.origin}/reset-password.html?token=${token}`;
 
-        await transporter.sendMail({
-            from: `"Swa-aim Support" <${process.env.EMAIL_USER}>`,
+        // Using Resend API instead of SMTP
+        const { data, error } = await resend.emails.send({
+            from: 'onboarding@resend.dev',
             to: email,
-            subject: 'Password Reset Request',
-            html: `<p>Click <a href="${resetLink}">here</a> to reset your password. Link expires in 15 mins.</p>`
+            subject: 'Swa-aim Password Reset',
+            html: `
+                <h3>Reset Your Password</h3>
+                <p>Click the link below to reset your password. It expires in 15 minutes.</p>
+                <a href="${resetLink}" style="padding:10px; background-color:#2563eb; color:white; text-decoration:none; border-radius:5px;">Reset Password</a>
+            `
         });
 
+        if (error) {
+            console.error("Resend API Error:", error);
+            return res.status(500).json({ message: "Email service error", error });
+        }
+
         res.json({ message: "Reset link sent to your email!" });
+
     } catch (err) {
-        console.error("CRITICAL EMAIL ERROR:", err);
-        res.status(500).json({ message: "Error sending reset email", error: err.message });
+        console.error("SERVER ERROR:", err);
+        res.status(500).json({ message: "Error processing request" });
     }
 });
 
 // ==========================================
-// 5. RESET PASSWORD
+// 4. RESET PASSWORD
 // ==========================================
 router.post('/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+        
         const user = await User.findById(decoded.id);
         if (!user) return res.status(404).json({ message: "User not found" });
 
         user.password = newPassword;
         await user.save();
+
         res.json({ message: "Password updated successfully!" });
     } catch (err) {
         res.status(400).json({ message: "Invalid or expired link." });
@@ -105,7 +125,7 @@ router.post('/reset-password', async (req, res) => {
 });
 
 // ==========================================
-// 6. PROFILE & POLICIES
+// 5. PROFILE & POLICIES
 // ==========================================
 router.put('/profile/:userId', async (req, res) => {
     try {
