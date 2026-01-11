@@ -11,10 +11,13 @@ const Policy = require('../models/Policy');
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: true, 
+    secure: false, 
     auth: {
         user: (process.env.EMAIL_USER || "").trim(),
         pass: (process.env.EMAIL_PASS || "").trim()
+    }
+    tls: {
+        rejectUnauthorized: false // Helps avoid connection blocks on cloud servers
     }
 });
 
