@@ -97,6 +97,10 @@
 <script>
     const API = "https://swaim-portal.onrender.com/api/auth";
     const userId = localStorage.getItem('userId');
+// If no user is found, send them to the login page
+if (!userId) {
+    window.location.href = "login.html"; 
+}
     let searchTimer;
 
     if (!userId) window.location.href = "login.html";
