@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend'); // Import Resend
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Policy = require('../models/Policy');
 
+// Initialize Resend with your API Key
+const resend = new Resend(process.env.RESEND_API_KEY);
 // ==========================================
 // 1. CONFIGURE EMAIL TRANSPORTER (FIXED SYNTAX)
 // ==========================================
