@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Policy = require('../models/Policy');
 
-// Configure Email Transporter
+// Configure Email Transporter (Cleaned up)
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -13,7 +14,9 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// 1. Register with REAL Email Notification
+/**
+ * @route   POST /api/register
+ */
 router.post('/register', async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
@@ -23,7 +26,7 @@ router.post('/register', async (req, res) => {
         user = new User({ name, email, phone, password });
         await user.save();
         
-        // SEND REAL EMAIL
+        // Send Welcome Email
         const mailOptions = {
             from: `"Swa-aim Portal" <${process.env.EMAIL_USER}>`,
             to: email,
@@ -51,7 +54,9 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// 2. Login
+/**
+ * @route   POST /api/login
+ */
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -69,7 +74,9 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// 3. Profile Editing
+/**
+ * @route   PUT /api/profile/:userId
+ */
 router.put('/profile/:userId', async (req, res) => {
     try {
         const { name, phone } = req.body;
@@ -84,7 +91,9 @@ router.put('/profile/:userId', async (req, res) => {
     }
 });
 
-// 4. Get Policies with Search
+/**
+ * @route   GET /api/policies/:userId
+ */
 router.get('/policies/:userId', async (req, res) => {
     try {
         const { search } = req.query;
@@ -96,6 +105,51 @@ router.get('/policies/:userId', async (req, res) => {
         res.json(policies);
     } catch (err) {
         res.status(500).json({ message: "Error fetching data" });
+    }
+});
+
+/**
+ * @route   POST /api/forgot-password
+ */
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "Email not found" });
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
+        const resetLink = `${req.headers.origin}/reset-password.html?token=${token}`;
+
+        await transporter.sendMail({
+            from: `"Swa-aim Support" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Password Reset Request',
+            html: `<p>Click <a href="${resetLink}">here</a> to reset your password. Link expires in 15 mins.</p>`
+        });
+
+        res.json({ message: "Reset link sent to email!" });
+    } catch (err) {
+        res.status(500).json({ message: "Error sending reset email" });
+    }
+});
+
+/**
+ * @route   POST /api/reset-password
+ */
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+        const user = await User.findById(decoded.id);
+        
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        user.password = newPassword; // Middleware hashes this automatically
+        await user.save();
+
+        res.json({ message: "Password updated successfully!" });
+    } catch (err) {
+        res.status(400).json({ message: "Invalid or expired token" });
     }
 });
 
