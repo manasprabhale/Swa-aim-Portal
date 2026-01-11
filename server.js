@@ -6,38 +6,31 @@ require('dotenv').config();
 
 const app = express();
 
-// 1. Middleware
+// 1. Middlewares
+app.use(express.json()); // Essential for reading JSON from frontend
 app.use(cors());
-app.use(express.json());
 
-// 2. Database Connection
-// Added a check to make sure MONGO_URI exists in your .env file
-if (!process.env.MONGO_URI) {
-    console.error("❌ ERROR: MONGO_URI is not defined in your .env file!");
-    process.exit(1);
-}
-
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB Connected'))
-    .catch((err) => console.error('❌ MongoDB Connection Error:', err));
-
-// 3. API Routes
-// IMPORTANT: Ensure the file actually exists at ./routes/auth.js
-const authRoutes = require('./routes/auth');
-app.use('/api', authRoutes);
-
-// 4. Serve Static Frontend Files
-// Ensure your index.html, script.js, and style.css are inside a folder named 'public'
+// 2. Serve Static Frontend Files
+// This ensures that index.html and reset-password.html are visible
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 5. Catch-all Route
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// 3. Database Connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ Connected to Swa-aim MongoDB'))
+    .catch(err => console.error('❌ MongoDB Connection Error:', err));
+
+// 4. Import Routes
+const authRoutes = require('./routes/auth');
+app.use('/api', authRoutes); // All routes in auth.js will start with /api
+
+// 5. Handle Reset Password Routing
+// Since we have a separate file for reset, this helps the browser find it
+app.get('/reset-password', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
 });
 
-// 6. Start Server
+// 6. Start the Server
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => { 
-    // Adding '0.0.0.0' helps Render bind to the correct network interface
-    console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, () => {
+    console.log(`🚀 Swa-aim Server running on port ${PORT}`);
 });
