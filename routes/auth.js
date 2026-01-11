@@ -6,7 +6,7 @@ const User = require('../models/User');
 const Policy = require('../models/Policy');
 
 // ==========================================
-// 1. CONFIGURE EMAIL TRANSPORTER
+// 1. CONFIGURE EMAIL TRANSPORTER (FIXED SYNTAX)
 // ==========================================
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -15,9 +15,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: (process.env.EMAIL_USER || "").trim(),
         pass: (process.env.EMAIL_PASS || "").trim()
-    }
+    },
     tls: {
-    rejectUnauthorized: false // Helps avoid connection blocks on cloud servers
+        rejectUnauthorized: false
     }
 });
 
@@ -32,18 +32,6 @@ router.post('/register', async (req, res) => {
 
         user = new User({ name, email, phone, password });
         await user.save();
-        
-        try {
-            await transporter.sendMail({
-                from: `"Swa-aim Portal" <${process.env.EMAIL_USER}>`,
-                to: email,
-                subject: 'Welcome to Swa-aim!',
-                html: `<h2>Welcome, ${name}!</h2><p>Your account is now active.</p>`
-            });
-        } catch (mailErr) {
-            console.error("Welcome Email Failed:", mailErr.message);
-        }
-        
         res.status(201).json({ message: 'User registered successfully!' });
     } catch (err) {
         res.status(500).json({ message: 'Registration failed' });
@@ -77,28 +65,16 @@ router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
         const user = await User.findOne({ email });
-        
-        if (!user) {
-            return res.status(404).json({ message: "Email not registered." });
-        }
+        if (!user) return res.status(404).json({ message: "Email not found." });
 
-        const token = jwt.sign(
-            { id: user._id }, 
-            process.env.JWT_SECRET || 'fallback_secret', 
-            { expiresIn: '15m' }
-        );
-        
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
         const resetLink = `${req.headers.origin}/reset-password.html?token=${token}`;
 
         await transporter.sendMail({
             from: `"Swa-aim Support" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: 'Password Reset Request',
-            html: `
-                <h3>Reset Your Password</h3>
-                <p>Click the button below to reset your password. Link expires in 15 mins.</p>
-                <a href="${resetLink}" style="background:#2563eb; color:white; padding:10px 20px; text-decoration:none; border-radius:5px; display:inline-block;">Reset Password</a>
-            `
+            html: `<p>Click <a href="${resetLink}">here</a> to reset your password. Link expires in 15 mins.</p>`
         });
 
         res.json({ message: "Reset link sent to your email!" });
@@ -114,14 +90,12 @@ router.post('/forgot-password', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
-        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
         const user = await User.findById(decoded.id);
         if (!user) return res.status(404).json({ message: "User not found" });
 
         user.password = newPassword;
         await user.save();
-
         res.json({ message: "Password updated successfully!" });
     } catch (err) {
         res.status(400).json({ message: "Invalid or expired link." });
@@ -129,17 +103,12 @@ router.post('/reset-password', async (req, res) => {
 });
 
 // ==========================================
-// 6. PROFILE & POLICIES (FIXED LINE 121)
+// 6. PROFILE & POLICIES
 // ==========================================
 router.put('/profile/:userId', async (req, res) => {
     try {
         const { name, phone } = req.body;
-        // FIXED: Added the initializer for the const 'user'
-        const user = await User.findByIdAndUpdate(
-            req.params.userId, 
-            { name, phone }, 
-            { new: true }
-        );
+        const user = await User.findByIdAndUpdate(req.params.userId, { name, phone }, { new: true });
         res.json({ message: "Profile updated!", user });
     } catch (err) {
         res.status(500).json({ message: "Update failed" });
