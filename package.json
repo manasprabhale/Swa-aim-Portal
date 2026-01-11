@@ -14,7 +14,12 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
+<<<<<<< HEAD
     "nodemailer": "^6.9.16",
     "resend": "^4.0.1"
+=======
+    "nodemailer": "^7.0.12",
+    "resend": "^6.7.0"
+>>>>>>> 9ad7cc3 (Integrated Resend API, Policy CRUD, and Premium Dashboard UI)
   }
 }
