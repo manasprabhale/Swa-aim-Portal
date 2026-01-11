@@ -15,10 +15,22 @@
             <button id="tab-reg" onclick="showTab('reg')">Register</button>
         </div>
         <form id="login-form">
-            <input type="email" id="l-email" placeholder="Email" required>
-            <input type="password" id="l-pass" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
+    <input type="email" id="l-email" placeholder="Email" required>
+    <input type="password" id="l-pass" placeholder="Password" required>
+    <button type="submit">Login</button>
+            
+    <p style="text-align: center; margin-top: 15px; font-size: 0.85rem;">
+        <a href="#" onclick="toggleForgot(true)" style="color: #2563eb; text-decoration: none;">Forgot Password?</a>
+    </p>
+</form>
+
+<div id="forgot-box" style="display: none; text-align: center;">
+    <h3>Reset Password</h3>
+    <p style="color: #666; font-size: 0.85rem; margin-bottom: 15px;">Enter your email to receive a reset link.</p>
+    <input type="email" id="forgot-email" placeholder="Enter your email" style="width: 100%; margin-bottom: 10px;">
+    <button onclick="sendResetLink()" id="send-reset-btn" style="background: #2563eb; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Send Reset Link</button>
+    <p onclick="toggleForgot(false)" style="margin-top: 15px; font-size: 0.85rem; color: #666; cursor: pointer;">Back to Login</p>
+</div>
         <form id="reg-form" style="display: none;">
             <input type="text" id="r-name" placeholder="Name" required>
             <input type="email" id="r-email" placeholder="Email" required>
