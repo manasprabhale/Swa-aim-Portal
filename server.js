@@ -8,40 +8,33 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 
-// --- MIDDLEWARE ---
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-// --- SERVE STATIC FILES ---
-// This tells Express that all your HTML, CSS, and JS are in the 'public' folder
+// Serve Static Files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- API ROUTES ---
+// API Routes
 app.use('/api/auth', authRoutes);
 
-// --- FRONTEND ROUTES ---
-// Root route: sends index.html (your login/home page)
+// Frontend Routes
+// Landing/Login page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// Dashboard route: sends dashboard.html
+// Dashboard page
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Fallback: If a user refreshes a page, send them back to index.html
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// --- DATABASE CONNECTION ---
+// Database Connection
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch((err) => console.error('❌ MongoDB connection error:', err));
 
-// --- START SERVER ---
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
