@@ -2,77 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Swa-aim | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swa-aim Dashboard</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7fe; padding: 20px; }
-        .container { max-width: 900px; margin: auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { background: #2563eb; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-        .policy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .policy-card { background: white; padding: 20px; border-left: 5px solid #2563eb; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .policy-card h3 { margin-top: 0; color: #1e293b; }
-        .badge { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; }
+        :root { --primary: #2563eb; --danger: #ef4444; --warning: #f59e0b; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; }
+        .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 24px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        button { cursor: pointer; border: none; border-radius: 8px; font-weight: 600; transition: opacity 0.2s; }
+        .btn-main { background: var(--primary); color: white; width: 100%; padding: 14px; }
+        .btn-edit { background: var(--warning); color: white; padding: 6px 12px; }
+        .btn-del { background: var(--danger); color: white; padding: 6px 12px; }
+        .policy-item { background: white; border-radius: 12px; padding: 20px; border-left: 6px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Welcome to your Portal</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>🛡️ Swa-aim Portal</h1>
+        <button onclick="logout()" style="background:#64748b; color:white; padding:8px 16px;">Logout</button>
+    </div>
 
     <div class="card">
-        <h3>Add New Policy Details</h3>
+        <h3>Add New Policy</h3>
         <form id="policyForm">
-            <input type="text" id="planName" placeholder="Plan Name (e.g., Term Life)" required>
+            <input type="text" id="planName" placeholder="Plan Name" required>
             <input type="text" id="policyNumber" placeholder="Policy Number" required>
             <select id="paymentMode" required>
-                <option value="">Select Payment Mode</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Quarterly">Quarterly</option>
-                <option value="Half-Yearly">Half-Yearly</option>
                 <option value="Yearly">Yearly</option>
+                <option value="Half-Yearly">Half-Yearly</option>
+                <option value="Quarterly">Quarterly</option>
+                <option value="Monthly">Monthly</option>
             </select>
-            <input type="number" id="premiumAmount" placeholder="Premium Amount (₹)" required>
-            <input type="number" id="sumAssured" placeholder="Sum Assured (₹)" required>
-            <button type="submit">Secure My Policy</button>
+            <div style="display: flex; gap: 10px;">
+                <input type="number" id="premiumAmount" placeholder="Premium (₹)" required>
+                <input type="number" id="sumAssured" placeholder="Sum Assured (₹)" required>
+            </div>
+            <button type="submit" class="btn-main">Save Policy Securely</button>
         </form>
     </div>
 
-    <h2>Your Active Policies</h2>
-    <div id="policyList" class="policy-grid">
-        </div>
+    <h2>Your Protected Policies</h2>
+    <div id="policyList" class="grid"></div>
 </div>
 
 <script>
-    const API_URL = "https://swaim-portal.onrender.com/api/auth";
+    const API = "https://swaim-portal.onrender.com/api/auth";
     const userId = localStorage.getItem('userId');
 
-    // 1. Fetch and Display Policies
+    if (!userId) window.location.href = "login.html";
+
     async function loadPolicies() {
-        const res = await fetch(`${API_URL}/policies/${userId}`);
+        const res = await fetch(`${API}/policies/${userId}`);
         const data = await res.json();
-        const list = document.getElementById('policyList');
-        list.innerHTML = data.length === 0 ? "<p>No policies found. Add your first one above!</p>" : "";
+        const container = document.getElementById('policyList');
+        container.innerHTML = data.length ? "" : "<p>No policies added yet.</p>";
 
         data.forEach(p => {
-            list.innerHTML += `
-                <div class="policy-card">
-                    <h3>${p.planName} <span class="badge">${p.status}</span></h3>
-                    <p><strong>Policy #:</strong> ${p.policyNumber}</p>
-                    <p><strong>Premium:</strong> ₹${p.premiumAmount.toLocaleString()} (${p.paymentMode})</p>
-                    <p><strong>Sum Assured:</strong> ₹${p.sumAssured.toLocaleString()}</p>
+            container.innerHTML += `
+                <div class="policy-item">
+                    <h3>${p.planName}</h3>
+                    <p><strong>ID:</strong> ${p.policyNumber}</p>
+                    <p><strong>Premium:</strong> ₹${p.premiumAmount.toLocaleString()}</p>
+                    <p><strong>Coverage:</strong> ₹${p.sumAssured.toLocaleString()}</p>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <button class="btn-edit" onclick="editPolicy('${p._id}', '${p.planName}')">Edit</button>
+                        <button class="btn-del" onclick="deletePolicy('${p._id}')">Delete</button>
+                    </div>
                 </div>
             `;
         });
     }
 
-    // 2. Handle Form Submission
-    document.getElementById('policyForm').addEventListener('submit', async (e) => {
+    document.getElementById('policyForm').onsubmit = async (e) => {
         e.preventDefault();
-        const btn = e.target.querySelector('button');
-        btn.innerText = "Saving...";
-
-        const payload = {
+        const body = {
             userId,
             planName: document.getElementById('planName').value,
             policyNumber: document.getElementById('policyNumber').value,
@@ -80,27 +87,36 @@
             premiumAmount: document.getElementById('premiumAmount').value,
             sumAssured: document.getElementById('sumAssured').value
         };
-
-        const res = await fetch(`${API_URL}/add-policy`, {
+        const res = await fetch(`${API}/add-policy`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(body)
         });
+        if (res.ok) { e.target.reset(); loadPolicies(); }
+        else { alert("Policy Number must be unique!"); }
+    };
 
-        if (res.ok) {
-            alert("Policy added successfully!");
-            e.target.reset();
+    async function deletePolicy(id) {
+        if (confirm("Delete this policy?")) {
+            await fetch(`${API}/policy/${id}`, { method: 'DELETE' });
             loadPolicies();
-        } else {
-            alert("Error: Likely a duplicate Policy Number.");
         }
-        btn.innerText = "Secure My Policy";
-    });
+    }
 
-    // Initial Load
-    if (!userId) { window.location.href = "login.html"; }
-    else { loadPolicies(); }
+    async function editPolicy(id, oldName) {
+        const newName = prompt("New Plan Name:", oldName);
+        if (newName) {
+            await fetch(`${API}/policy/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ planName: newName })
+            });
+            loadPolicies();
+        }
+    }
+
+    function logout() { localStorage.clear(); window.location.href="login.html"; }
+    loadPolicies();
 </script>
-
 </body>
 </html>
