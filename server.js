@@ -10,29 +10,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 2. Serve Static Frontend Files
-// This tells Express to serve index.html, style.css, etc., from the 'public' folder
-app.use(express.static(path.join(__dirname, 'public')));
+// 2. Database Connection
+// Added a check to make sure MONGO_URI exists in your .env file
+if (!process.env.MONGO_URI) {
+    console.error("❌ ERROR: MONGO_URI is not defined in your .env file!");
+    process.exit(1);
+}
 
-// 3. Database Connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB Connected'))
     .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 
-// 4. API Routes
-// Links the auth logic (login/register) from your routes folder
+// 3. API Routes
+// IMPORTANT: Ensure the file actually exists at ./routes/auth.js
 const authRoutes = require('./routes/auth');
 app.use('/api', authRoutes);
 
+// 4. Serve Static Frontend Files
+// Ensure your index.html, script.js, and style.css are inside a folder named 'public'
+app.use(express.static(path.join(__dirname, 'public')));
+
 // 5. Catch-all Route
-// This is the most important fix for Render. It ensures that if a user 
-// refreshes the page or visits a link, they get your index.html file.
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // 6. Start Server
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running at: https://swaim-portal.onrender.com`);
+app.listen(PORT, '0.0.0.0', () => { 
+    // Adding '0.0.0.0' helps Render bind to the correct network interface
+    console.log(`🚀 Server running on port ${PORT}`);
 });
