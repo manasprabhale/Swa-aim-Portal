@@ -1,107 +1,87 @@
 const API = window.location.origin + "/api";
+let currentUserId = null;
 
 // UI Toggles
 function showTab(type) {
-    const loginForm = document.getElementById('login-form');
-    const regForm = document.getElementById('reg-form');
-    const tabLogin = document.getElementById('tab-login');
-    const tabReg = document.getElementById('tab-reg');
-
-    if (type === 'login') {
-        loginForm.style.display = 'flex';
-        regForm.style.display = 'none';
-        tabLogin.classList.add('active');
-        tabReg.classList.remove('active');
-    } else {
-        loginForm.style.display = 'none';
-        regForm.style.display = 'flex';
-        tabLogin.classList.remove('active');
-        tabReg.classList.add('active');
-    }
+    document.getElementById('login-form').style.display = type === 'login' ? 'flex' : 'none';
+    document.getElementById('reg-form').style.display = type === 'login' ? 'none' : 'flex';
 }
 
-function toggleForgot(show) {
-    const loginForm = document.getElementById('login-form');
-    const tabSys = document.querySelector('.tab-system');
-    const forgotBox = document.getElementById('forgot-box');
-    
-    if (show) {
-        loginForm.style.display = 'none';
-        tabSys.style.display = 'none';
-        forgotBox.style.display = 'block';
-    } else {
-        loginForm.style.display = 'flex';
-        tabSys.style.display = 'flex';
-        forgotBox.style.display = 'none';
-    }
+function toggleProfile() {
+    const sec = document.getElementById('profile-section');
+    sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
 }
 
-// Fetch Policies from Server
-async function fetchPolicies(userId) {
+// 1. Search / Filter Logic
+async function filterPolicies() {
+    const searchTerm = document.getElementById('search-input').value;
+    fetchPolicies(currentUserId, searchTerm);
+}
+
+// 2. Fetch Policies
+async function fetchPolicies(userId, search = "") {
+    currentUserId = userId;
     const container = document.getElementById('policies-container');
     try {
-        const response = await fetch(`${API}/policies/${userId}`);
+        const response = await fetch(`${API}/policies/${userId}?search=${search}`);
         const policies = await response.json();
 
-        if (!policies || policies.length === 0) {
-            container.innerHTML = `
-                <p>No active policies found.</p>
-                <button onclick="seedFirstPolicy('${userId}')" style="margin-top:10px; font-size:0.8rem;">Add Welcome Policy</button>
-            `;
-            return;
-        }
-
-        container.innerHTML = policies.map(p => `
-            <div class="policy-item" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px;">
-                <span class="badge" style="float:right; background:#d4edda; color:#155724; padding:2px 8px; border-radius:4px; font-size:0.8rem;">${p.status}</span>
+        container.innerHTML = policies.length ? policies.map(p => `
+            <div class="policy-item">
+                <span class="badge">${p.status}</span>
                 <strong>${p.planName}</strong>
-                <p style="margin: 5px 0;">Investment: ₹${p.amount}</p>
-                <small style="color: #666;">${p.description || ''}</small>
+                <p>₹${p.amount}</p>
             </div>
-        `).join('');
+        `).join('') : "<p>No matching policies.</p>";
     } catch (err) {
-        container.innerHTML = "<p>Error loading dashboard.</p>";
+        container.innerHTML = "Error loading data.";
     }
 }
 
-// Helper to add a policy if the user has none
-async function seedFirstPolicy(userId) {
-    await fetch(`${API}/policies/seed`, {
-        method: 'POST',
+// 3. Profile Update Logic
+async function updateProfile() {
+    const name = document.getElementById('edit-name').value;
+    const phone = document.getElementById('edit-phone').value;
+
+    const res = await fetch(`${API}/profile/${currentUserId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ name, phone })
     });
-    fetchPolicies(userId);
+
+    if (res.ok) {
+        alert("Profile updated!");
+        document.getElementById('user-name').innerText = name;
+        toggleProfile();
+    }
 }
 
-// Login Submit
+// 4. Login Logic
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('l-email').value;
     const password = document.getElementById('l-pass').value;
 
-    try {
-        const response = await fetch(`${API}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
+    const response = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    });
 
-        const data = await response.json();
-        if (response.ok) {
-            document.getElementById('auth-box').style.display = 'none';
-            document.getElementById('user-dashboard').style.display = 'block';
-            document.getElementById('user-name').innerText = data.user.name;
-            fetchPolicies(data.user.id); 
-        } else {
-            alert(data.message);
-        }
-    } catch (err) {
-        alert("Server connection failed.");
+    const data = await response.json();
+    if (response.ok) {
+        document.getElementById('auth-box').style.display = 'none';
+        document.getElementById('user-dashboard').style.display = 'block';
+        document.getElementById('user-name').innerText = data.user.name;
+        document.getElementById('edit-name').value = data.user.name;
+        document.getElementById('edit-phone').value = data.user.phone;
+        fetchPolicies(data.user.id);
+    } else {
+        alert(data.message);
     }
 });
 
-// Registration Submit
+// 5. Register Logic
 document.getElementById('reg-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('r-name').value;
@@ -109,22 +89,15 @@ document.getElementById('reg-form').addEventListener('submit', async (e) => {
     const phone = document.getElementById('r-phone').value;
     const password = document.getElementById('r-pass').value;
 
-    try {
-        const response = await fetch(`${API}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, phone, password })
-        });
+    const res = await fetch(`${API}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password })
+    });
 
-        if (response.ok) {
-            alert("Success! Please Login.");
-            showTab('login');
-        } else {
-            const data = await response.json();
-            alert(data.message);
-        }
-    } catch (err) {
-        alert("Registration failed.");
+    if (res.ok) {
+        alert("Registration Successful! Welcome email triggered.");
+        showTab('login');
     }
 });
 
