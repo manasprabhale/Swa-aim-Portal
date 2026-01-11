@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); // Needed to encrypt passwords
+const bcrypt = require('bcryptjs'); 
 
 const UserSchema = new mongoose.Schema({
     name: { 
@@ -11,23 +11,24 @@ const UserSchema = new mongoose.Schema({
         type: String, 
         required: [true, 'Email is required'], 
         unique: true, 
-        lowercase: true, // Stores 'Email@Me.com' as 'email@me.com'
+        lowercase: true, 
         trim: true 
     },
     password: { 
         type: String, 
         required: [true, 'Password is required'],
-        minlength: 6 // Basic security check
+        minlength: 6 
     },
     phone: { 
         type: String, 
+        required: [true, 'Phone number is required'], // Added for consistency
         trim: true 
     }
 }, { 
-    timestamps: true // Automatically adds 'createdAt' and 'updatedAt' fields
+    timestamps: true 
 });
 
-// Middleware: Hash the password before saving it to the database
+// Middleware: Hash password before saving
 UserSchema.pre('save', async function(next) {
     if (!this.isModified('password')) return next();
     
@@ -36,7 +37,7 @@ UserSchema.pre('save', async function(next) {
     next();
 });
 
-// Method to compare entered password with the hashed password in DB
+// Method for auth.js to call during login
 UserSchema.methods.comparePassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
