@@ -1,6 +1,6 @@
 const API = window.location.origin + "/api";
 
-// 1. UI Navigation Logic
+// UI Toggles
 function showTab(type) {
     const loginForm = document.getElementById('login-form');
     const regForm = document.getElementById('reg-form');
@@ -36,16 +36,18 @@ function toggleForgot(show) {
     }
 }
 
-// 2. Data Fetching Logic (Now correctly handles real data)
+// Fetch Policies from Server
 async function fetchPolicies(userId) {
     const container = document.getElementById('policies-container');
-    
     try {
         const response = await fetch(`${API}/policies/${userId}`);
         const policies = await response.json();
 
         if (!policies || policies.length === 0) {
-            container.innerHTML = "<p>No active policies found.</p>";
+            container.innerHTML = `
+                <p>No active policies found.</p>
+                <button onclick="seedFirstPolicy('${userId}')" style="margin-top:10px; font-size:0.8rem;">Add Welcome Policy</button>
+            `;
             return;
         }
 
@@ -57,14 +59,22 @@ async function fetchPolicies(userId) {
                 <small style="color: #666;">${p.description || ''}</small>
             </div>
         `).join('');
-
     } catch (err) {
-        console.error("Fetch Policies Error:", err);
-        container.innerHTML = "<p>Error loading policies from server.</p>";
+        container.innerHTML = "<p>Error loading dashboard.</p>";
     }
 }
 
-// 3. Login Logic
+// Helper to add a policy if the user has none
+async function seedFirstPolicy(userId) {
+    await fetch(`${API}/policies/seed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+    });
+    fetchPolicies(userId);
+}
+
+// Login Submit
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('l-email').value;
@@ -78,24 +88,20 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         });
 
         const data = await response.json();
-
         if (response.ok) {
             document.getElementById('auth-box').style.display = 'none';
             document.getElementById('user-dashboard').style.display = 'block';
             document.getElementById('user-name').innerText = data.user.name;
-            
-            // PASSING THE USER ID TO FETCH REAL DATA
             fetchPolicies(data.user.id); 
         } else {
-            alert(data.message || "Login Failed");
+            alert(data.message);
         }
     } catch (err) {
-        console.error("Login Error:", err);
-        alert("Connection to server failed.");
+        alert("Server connection failed.");
     }
 });
 
-// 4. Registration Logic
+// Registration Submit
 document.getElementById('reg-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('r-name').value;
@@ -110,20 +116,16 @@ document.getElementById('reg-form').addEventListener('submit', async (e) => {
             body: JSON.stringify({ name, email, phone, password })
         });
 
-        const data = await response.json();
-
         if (response.ok) {
-            alert("Registration successful! Please login.");
+            alert("Success! Please Login.");
             showTab('login');
         } else {
-            alert(data.message || "Registration failed");
+            const data = await response.json();
+            alert(data.message);
         }
     } catch (err) {
-        console.error("Reg Error:", err);
+        alert("Registration failed.");
     }
 });
 
-// 5. Logout Logic
-function logout() {
-    window.location.reload(); 
-}
+function logout() { window.location.reload(); }
