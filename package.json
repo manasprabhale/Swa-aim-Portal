@@ -1,7 +1,6 @@
 {
   "name": "swa-aim-portal",
   "version": "1.0.0",
-  "description": "Insurance Portal with Secure Authentication",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -15,8 +14,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
     "nodemailer": "^6.9.16",
-    "resend": "^4.0.1"
-    "nodemailer": "^7.0.12",
     "resend": "^6.7.0"
   }
 }
