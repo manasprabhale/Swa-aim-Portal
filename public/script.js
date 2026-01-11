@@ -105,4 +105,6 @@ async function fetchPolicies() {
     // In a real app, you'd fetch from `${API}/policies`
     container.innerHTML = `<div class="policy-item">
         <strong>Standard Life Plan</strong> <span class="badge">Active</span>
-        <p>
+        <p><p>Welcome to your dashboard.</p>
+        </div>`;
+} // Added missing closing brace
