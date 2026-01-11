@@ -6,30 +6,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Swa-aim Portal</h1>
+    <nav>
+        <h1>Swa-aim Dashboard</h1>
         <button onclick="logout()">Logout</button>
-    </header>
-
-    <main>
-        <section id="policyForm">
-            <h3>Add New Policy</h3>
-            <input type="text" id="planName" placeholder="Plan Name">
-            <input type="number" id="premium" placeholder="Premium (₹)">
-            <button onclick="savePolicy()">Save Policy Securely</button>
-        </section>
-    </main>
-
+    </nav>
+    <div id="content">
+        </div>
     <script>
-        // REDIRECT GUARD: Check if user is logged in
+        // REDIRECT GUARD: If no userId is found, send back to login
         const userId = localStorage.getItem('userId');
         if (!userId) {
             window.location.href = "/"; 
-        }
-
-        async function savePolicy() {
-            // Logic to send data to /api/auth/add-policy
-            alert("Policy saved!");
         }
 
         function logout() {
