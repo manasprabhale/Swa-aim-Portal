@@ -10,24 +10,24 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve Static Files from the 'public' folder
+// Serve Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- ROUTES ---
-// Root route serves the login/home page
+// --- FRONTEND ROUTES ---
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Dashboard route
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// MongoDB Connection
+// --- DATABASE CONNECTION ---
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ MongoDB Connected'))
+    .then(() => console.log('✅ MongoDB Connected Successfully'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Professional Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Professional Server running on port ${PORT}`);
+});
