@@ -1,14 +1,29 @@
 const mongoose = require('mongoose');
 
 const PolicySchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    planName: { type: String, required: true },
-    policyNumber: { type: String, required: true },
-    frequency: { type: String, enum: ['Yearly', 'Monthly'], default: 'Yearly' },
-    premiumAmount: { type: Number, required: true },
-    sumAssured: { type: Number, required: true },
-    status: { type: String, default: 'Active' },
-    createdAt: { type: Date, default: Date.now }
+    // Links the policy to a specific user ID
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
+    planName: { 
+        type: String, 
+        required: [true, 'Plan name is required'] 
+    },
+    status: { 
+        type: String, 
+        default: 'Active' 
+    },
+    amount: { 
+        type: Number, 
+        required: [true, 'Investment amount is required'] 
+    },
+    description: { 
+        type: String 
+    }
+}, { 
+    timestamps: true 
 });
 
 module.exports = mongoose.model('Policy', PolicySchema);
