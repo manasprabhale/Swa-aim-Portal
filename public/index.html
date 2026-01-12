@@ -27,7 +27,16 @@
             <button type="submit">Create Account</button>
         </form>
     </div>
-
+<div id="forgot-box" style="display: none; text-align: center;">
+    <h3>Reset Password</h3>
+    <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Enter your email to receive a reset link.</p>
+    
+    <input type="email" id="forgot-email" placeholder="Enter your registered email" style="width: 100%; margin-bottom: 10px;">
+    
+    <button id="send-reset-btn" onclick="sendResetLink()" style="background: var(--primary); color: white; width: 100%; padding: 12px; border:none; border-radius:8px; cursor:pointer;">Send Reset Link</button>
+    
+    <p class="toggle-text" onclick="toggleForgot(false)" style="margin-top: 15px;">Back to Login</p>
+</div>
     <div id="user-dashboard" class="container" style="display: none; max-width: 600px;">
         <div class="header">
             <h2>Welcome, <span id="user-name">User</span></h2>
