@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swa-aim | Professional Portal</title>
+    <title>Swa-aim | Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -12,53 +12,63 @@
         <aside class="sidebar">
             <div class="logo">🛡️ Swa-aim</div>
             <nav>
-                <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="#" class="active"><i class="fas fa-chart-line"></i> Overview</a>
+                <a href="#"><i class="fas fa-list"></i> My Policies</a>
                 <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </nav>
         </aside>
 
         <main class="content">
-            <header>
-                <h1>Client Protection Overview</h1>
+            <header class="main-header">
+                <h1>Protection Overview</h1>
+                <div class="user-profile">Welcome, User</div>
             </header>
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <i class="fas fa-file-shield"></i>
-                    <div><h3>Total Policies</h3><p id="pCount">0</p></div>
+                    <i class="fas fa-file-contract"></i>
+                    <div class="data"><h3>Policies</h3><p id="pCount">0</p></div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-indian-rupee-sign"></i>
-                    <div><h3>Monthly Premium</h3><p id="pPremium">₹0</p></div>
+                    <i class="fas fa-wallet"></i>
+                    <div class="data"><h3>Premium</h3><p id="pPremium">₹0</p></div>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-umbrella"></i>
-                    <div><h3>Sum Assured</h3><p id="pSum">₹0</p></div>
+                    <div class="data"><h3>Sum Assured</h3><p id="pSum">₹0</p></div>
                 </div>
             </div>
 
-            <section class="policy-form">
-                <h3><i class="fas fa-plus"></i> Add New Policy</h3>
-                <div class="form-row">
-                    <input type="text" id="planName" placeholder="Plan Name">
-                    <input type="number" id="premium" placeholder="Premium (₹)">
-                    <select id="freq">
-                        <option value="Yearly">Yearly</option>
-                        <option value="Monthly">Monthly</option>
-                    </select>
-                    <button class="btn-primary">Secure Data</button>
+            <section class="action-section">
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Add New Policy</h3>
+                    <div class="form-row">
+                        <input type="text" id="planName" placeholder="Plan Name">
+                        <input type="number" id="premium" placeholder="Premium (₹)">
+                        <select id="freq">
+                            <option>Yearly</option>
+                            <option>Monthly</option>
+                        </select>
+                        <button class="btn-primary" onclick="addPolicy()">Secure Data</button>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
 
     <script>
-        const userId = localStorage.getItem('userId');
-        if (!userId) window.location.href = "/";
+        // REDIRECT GUARD
+        if (!localStorage.getItem('userId')) {
+            window.location.href = "/";
+        }
 
         function logout() {
             localStorage.clear();
             window.location.href = "/";
+        }
+
+        function addPolicy() {
+            alert("Policy data added to secure queue!");
         }
     </script>
 </body>
