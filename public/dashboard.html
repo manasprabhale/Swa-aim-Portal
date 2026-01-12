@@ -2,64 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swa-aim | Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo">🛡️ Swa-aim</div>
-            <nav>
-                <a href="#" class="active"><i class="fas fa-chart-line"></i> Overview</a>
-                <a href="#"><i class="fas fa-list"></i> My Policies</a>
-                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </nav>
-        </aside>
+<body style="background: #f4f7f9; display: block; padding: 20px;">
+    <div style="max-width: 900px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1>🛡️ Policy Management</h1>
+            <button onclick="logout()" style="width: auto; background: #ef4444; padding: 8px 15px;">Logout</button>
+        </div>
 
-        <main class="content">
-            <header class="main-header">
-                <h1>Protection Overview</h1>
-                <div class="user-profile">Welcome, User</div>
-            </header>
+        <div class="login-card" style="max-width: 100%; text-align: left; margin-bottom: 30px;">
+            <h3>Add New Policy</h3>
+            <form id="policyForm" style="display: flex; gap: 10px; margin-top: 15px;">
+                <input type="text" id="pName" placeholder="Policy Name (e.g. Life Insurance)" required>
+                <input type="text" id="pHolder" placeholder="Holder Name" required>
+                <button type="submit" style="width: auto; background: #10b981; padding: 0 20px;">Save</button>
+            </form>
+        </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <i class="fas fa-file-contract"></i>
-                    <div class="data"><h3>Policies</h3><p id="pCount">0</p></div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-wallet"></i>
-                    <div class="data"><h3>Premium</h3><p id="pPremium">₹0</p></div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-umbrella"></i>
-                    <div class="data"><h3>Sum Assured</h3><p id="pSum">₹0</p></div>
-                </div>
+        <div id="policyList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             </div>
-
-            <section class="action-section">
-                <div class="form-card">
-                    <h3><i class="fas fa-plus-circle"></i> Add New Policy</h3>
-                    <div class="form-row">
-                        <input type="text" id="planName" placeholder="Plan Name">
-                        <input type="number" id="premium" placeholder="Premium (₹)">
-                        <select id="freq">
-                            <option>Yearly</option>
-                            <option>Monthly</option>
-                        </select>
-                        <button class="btn-primary" onclick="addPolicy()">Secure Data</button>
-                    </div>
-                </div>
-            </section>
-        </main>
     </div>
 
     <script>
-        // REDIRECT GUARD
-        if (!localStorage.getItem('userId')) {
-            window.location.href = "/";
+        if (!localStorage.getItem('userEmail')) window.location.href = "/";
+
+        async function loadPolicies() {
+            const res = await fetch('/api/policies');
+            const policies = await res.json();
+            const list = document.getElementById('policyList');
+            list.innerHTML = '';
+            
+            policies.forEach(p => {
+                list.innerHTML += `
+                    <div class="login-card" style="margin: 0; text-align: left; border-left: 5px solid #2563eb; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="margin:0">${p.name}</h3>
+                            <p style="color: #666">${p.holder}</p>
+                        </div>
+                        <button onclick="deletePolicy('${p._id}')" style="width: auto; background: none; color: #ef4444; border: 1px solid #ef4444; padding: 5px 10px;">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('policyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await fetch('/api/policies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: document.getElementById('pName').value,
+                    holder: document.getElementById('pHolder').value
+                })
+            });
+            document.getElementById('policyForm').reset();
+            loadPolicies();
+        });
+
+        async function deletePolicy(id) {
+            if (confirm("Delete this policy?")) {
+                await fetch(`/api/policies/${id}`, { method: 'DELETE' });
+                loadPolicies();
+            }
         }
 
         function logout() {
@@ -67,9 +73,7 @@
             window.location.href = "/";
         }
 
-        function addPolicy() {
-            alert("Policy data added to secure queue!");
-        }
+        loadPolicies();
     </script>
 </body>
 </html>
