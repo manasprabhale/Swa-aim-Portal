@@ -6,31 +6,28 @@ require('dotenv').config();
 
 const app = express();
 
-// 1. Middlewares
-app.use(express.json()); // Essential for reading JSON from frontend
+// Middleware
+app.use(express.json());
 app.use(cors());
 
-// 2. Serve Static Frontend Files
-// This ensures that index.html and reset-password.html are visible
+// Serve Static Files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 3. Database Connection
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ Connected to Swa-aim MongoDB'))
+// --- ROUTES ---
+// Root route serves the login/home page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Dashboard route
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// 4. Import Routes
-const authRoutes = require('./routes/auth');
-app.use('/api', authRoutes); // All routes in auth.js will start with /api
-
-// 5. Handle Reset Password Routing
-// Since we have a separate file for reset, this helps the browser find it
-app.get('/reset-password', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
-});
-
-// 6. Start the Server
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-    console.log(`🚀 Swa-aim Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Professional Server running on port ${PORT}`));
