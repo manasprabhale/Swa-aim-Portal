@@ -1,35 +1,90 @@
-:root {
-    --primary: #2563eb;
-    --bg: #f8fafc;
-    --white: #ffffff;
-    --text: #1e293b;
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+body.auth-page {
+    background: #f4f7f9;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-/* Sidebar */
-.dashboard-container { display: flex; min-height: 100vh; }
-.sidebar { width: 250px; background: var(--white); padding: 2rem; border-right: 1px solid #e2e8f0; }
-.logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 2rem; }
-.sidebar nav a { display: block; padding: 0.8rem; color: #64748b; text-decoration: none; border-radius: 8px; margin-bottom: 0.5rem; }
-.sidebar nav a.active, .sidebar nav a:hover { background: #eff6ff; color: var(--primary); }
+.login-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
 
-/* Content */
-.content { flex: 1; padding: 2rem; }
-.main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+h1 {
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
 
-/* Stats */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-.stat-card { background: var(--white); padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-.stat-card i { font-size: 2rem; color: var(--primary); background: #dbeafe; padding: 1rem; border-radius: 10px; }
+#msg {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
 
-/* Form */
-.form-card { background: var(--white); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-.form-row { display: flex; gap: 1rem; margin-top: 1rem; }
-input, select { flex: 1; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 6px; }
-.btn-primary { background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; }
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    transition: border 0.3s;
+}
 
-/* Login Card */
-.login-card { width: 400px; margin: 100px auto; background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); text-align: center; }
-.login-card input { width: 100%; margin-bottom: 1rem; display: block; box-sizing: border-box; }
-.login-card button { width: 100%; background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
+input:focus {
+    border-color: #2563eb;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.auth-footer {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+#tgl {
+    color: #2563eb;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+#tgl:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+/* For the OTP section transition */
+#otpSec input {
+    border-color: #10b981;
+}
